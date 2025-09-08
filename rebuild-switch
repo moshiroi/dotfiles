@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+if [ $(uname -o) = "Darwin" ]; then
+  echo "Switching darwin profile" 
+  sudo darwin-rebuild switch --flake .
+else
+  echo "Switching nixos profile"
+  sudo nixos-rebuild switch --flake . 
+fi
+
+
