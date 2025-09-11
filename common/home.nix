@@ -58,7 +58,7 @@
         ]
       ))
       poetry
-    ]
+    ];
 
   fonts.fontconfig.enable = true;
   home.shellAliases = {
