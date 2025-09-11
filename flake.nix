@@ -113,7 +113,7 @@
       };
 
       homeManagerModules = {
-        home = ./common/home.nix;
+        home = import ./common/home.nix;
       };
     };
 }
