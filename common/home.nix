@@ -35,6 +35,7 @@
       just
 
       # Dev tooling
+      nushell
       kitty
       ripgrep
       eza
