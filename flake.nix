@@ -113,7 +113,7 @@
       };
 
       homeManagerModules = {
-        home = ./common/home.nix
-      }
+        home = ./common/home.nix;
+      };
     };
 }
