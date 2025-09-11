@@ -58,11 +58,7 @@
         ]
       ))
       poetry
-
-      # Android
-      android-tools
     ]
-    ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ android-studio ];
 
   fonts.fontconfig.enable = true;
   home.shellAliases = {
