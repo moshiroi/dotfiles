@@ -28,12 +28,16 @@ alias fg = job unfreeze
 alias htop = btm;
 alias top = btm;
 alias cat = bat;
-alias ls = eza;
 alias tf = terraform;
 alias kc = kubectl;
-# alias ship = git add .; git commit -m 'ship'; git push;
 alias zj = zellij;
 alias hxp = hx ~/git/scratchpad/;
+
+def ship [message: string] {
+    git add .
+    git commit -m $message
+    git push
+}
 
 mkdir ($nu.data-dir | path join "vendor/autoload")
 starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")
