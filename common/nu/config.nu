@@ -32,6 +32,8 @@ alias tf = terraform;
 alias kc = kubectl;
 alias zj = zellij;
 alias hxp = hx ~/git/scratchpad/;
+alias pbcopy = xclip -selection clipboard;
+alias pbpaste = xclip -selection clipboard -o;
 
 def ship [message: string] {
     git add .

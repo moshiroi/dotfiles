@@ -34,6 +34,7 @@
       qemu
       qemu_kvm
       just
+      wl-clipboard-x11
 
       # Dev tooling
       nushell
