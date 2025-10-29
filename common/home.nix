@@ -216,4 +216,5 @@
 
   xdg.configFile."nushell/config.nu".source = ./nu/config.nu;
   xdg.configFile."nushell/env.nu".source = ./nu/env.nu;
+  xdg.configFile."nushell/fzf.nu".source = ./nu/fzf.nu;
 }
