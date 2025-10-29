@@ -20,6 +20,7 @@
       # Linters + formatting
       nixd
       nixfmt
+      nufmt
       vscode-langservers-extracted
       nodePackages.prettier
       nodePackages.typescript-language-server
