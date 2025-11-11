@@ -4,6 +4,7 @@
     enable = true;
     defaultEditor = true;
     themes.alexis = import ./theme.nix;
+    themes.custom-cat = import ./theme-2.nix;
     languages = {
       language-server = {
         nixd = {
