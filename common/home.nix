@@ -8,8 +8,12 @@
   home.stateVersion = "22.11"; # Adjust this version as needed
   nixpkgs.config.allowUnfree = true;
   home.packages =
+    let
+      git-worktree-tmp = pkgs.writeShellScriptBin "git-worktree-tmp" (builtins.readFile ./scripts/git-worktree-tmp.sh);
+    in
     with pkgs;
     [
+      git-worktree-tmp
       # Infra
       awscli2
       kubectl
@@ -77,6 +81,7 @@
     # TODO: Take WSL as a bool specialArg
     sdown = "sudo /mnt/c/Windows/System32/shutdown.exe /s /f /t 0";
     hxp = "hx /git/plan";
+    gwc = "git-worktree-tmp";
   };
 
   home.sessionVariables = {

@@ -100,7 +100,7 @@
       ];
     };
     settings = {
-      theme = "gruvbox_material_dark_hard";
+      theme = "custom-cat";
       keys.normal = {
         ret= "goto_word";
       };
