@@ -81,7 +81,6 @@
     # TODO: Take WSL as a bool specialArg
     sdown = "sudo /mnt/c/Windows/System32/shutdown.exe /s /f /t 0";
     hxp = "hx /git/plan";
-    gwc = "git-worktree-tmp";
   };
 
   home.sessionVariables = {
