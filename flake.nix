@@ -1,14 +1,16 @@
 {
-  description = "NixOS with Home Manager configuration";
+  description = "NixOS + nix-darwin + Home Manager configuration";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    darwin.url = "github:lnl7/nix-darwin";
+    darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     helix.url = "github:helix-editor/helix/master";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
-    niri.url = "github:sodiboo/niri-flake/main";
+    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -18,102 +20,82 @@
       home-manager,
       helix,
       zen-browser,
-      niri,
+      nixos-wsl,
       ...
     }:
     let
-      username = "mohamedshire";
-      wsl_hostname = "nixos";
-      linux_hostname = "jarvis";
-      darwin_hostname = "Mohameds-MacBook-Pro";
-      specialArgs = { inherit username zen-browser niri; };
+      lib = import ./lib { inherit nixpkgs home-manager darwin; };
+      overlays = import ./overlays { inherit helix; };
+
+      mkPkgs = system: import nixpkgs {
+        inherit system overlays;
+        config.allowUnfree = true;
+      };
+
+      specialArgs = { inherit zen-browser; };
     in
     {
-      nixosConfigurations =
-        let
+      nixosConfigurations = {
+        # WSL2 NixOS config
+        nixos = lib.mkNixosSystem {
+          hostname = "nixos";
           system = "x86_64-linux";
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-            overlays = [ helix.overlays.default ];
-          };
-        in
-        {
-          ${wsl_hostname} = nixpkgs.lib.nixosSystem {
-            inherit pkgs system;
-            modules = [
-              ./wsl/configuration.nix
-              ./common/linux-common.nix
-              ./wsl/nvidia.nix 
-              ./common/system.nix
-              home-manager.nixosModules.home-manager
-              {
-                home-manager.useGlobalPkgs = true; # uses the same nixpkgs instance as your system configuration
-                home-manager.useUserPackages = true;
-                home-manager.users.nixos = import ./common/home.nix;
-                home-manager.extraSpecialArgs = specialArgs;
-              }
-            ];
-          };
-
-          ${linux_hostname} = nixpkgs.lib.nixosSystem {
-            inherit pkgs system specialArgs;
-            modules = [
-              ./linux-desktop
-              ./common/linux-common.nix
-              ./common/system.nix
-              home-manager.nixosModules.home-manager
-              {
-                home-manager.useGlobalPkgs = true; # uses the same nixpkgs instance as your system configuration
-                home-manager.useUserPackages = true;
-                home-manager.users.${username} = {
-                  imports = [
-                    ./common/home.nix
-                    ./linux-desktop/home.nix
-                  ];
-                  programs.niri.enable = true;
-                  programs.zen-browser.enable = true;
-                };
-                home-manager.extraSpecialArgs = specialArgs;
-              }
-              # NOTE: If you want to virtualise this from a x86_64-darwin machine, uncomment the lines below
-              # {
-              #   virtualisation.host.pkgs = import nixpkgs {
-              #     system = "x86_64-darwin";
-              #   };
-              # }
-            ];
-          };
+          username = "nixos";
+          specialArgs = specialArgs // { inherit nixos-wsl; pkgs = mkPkgs "x86_64-linux"; };
+          modules = [
+            ./hosts/wsl
+            ./modules/common/system.nix
+          ];
+          homeModules = [ ./modules/home ];
         };
 
+        # x86_64 NixOS config (home pc)
+        jarvis = lib.mkNixosSystem {
+          hostname = "jarvis";
+          system = "x86_64-linux";
+          username = "mohamedshire";
+          specialArgs = specialArgs // { pkgs = mkPkgs "x86_64-linux"; };
+          modules = [
+            ./hosts/jarvis
+            ./modules/common/system.nix
+          ];
+          homeModules = [
+            ./modules/home
+            ./modules/home/desktop.nix
+          ];
+        };
+      };
+
       darwinConfigurations = {
-        ${darwin_hostname} =
-          let
-            system = "x86_64-darwin";
-          in
-          darwin.lib.darwinSystem {
-            inherit specialArgs;
-            modules = [
-              ./darwin/system.nix
-              ./common/system.nix
-              home-manager.darwinModules.home-manager
-              {
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = false;
-                home-manager.users.${username} = import ./common/home.nix;
-                home-manager.extraSpecialArgs = specialArgs;
-              }
-            ];
-            pkgs = import nixpkgs {
-              inherit system;
-              config.allowUnfree = true;
-              overlays = [ helix.overlays.default ];
-            };
-          };
+        # M4 MacBook Pro (aarch64)
+        "Mohameds-MacBook-Pro" = lib.mkDarwinSystem {
+          hostname = "Mohameds-MacBook-Pro";
+          system = "aarch64-darwin";
+          username = "mohamedshire";
+          specialArgs = specialArgs // { pkgs = mkPkgs "aarch64-darwin"; };
+          modules = [
+            ./hosts/darwin
+            ./modules/common/system.nix
+          ];
+          homeModules = [ ./modules/home ];
+        };
+
+        # Intel Mac Pro (x86_64)
+        "Mohameds-Mac-Pro" = lib.mkDarwinSystem {
+          hostname = "Mohameds-Mac-Pro";
+          system = "x86_64-darwin";
+          username = "mohamedshire";
+          specialArgs = specialArgs // { pkgs = mkPkgs "x86_64-darwin"; };
+          modules = [
+            ./hosts/darwin
+            ./modules/common/system.nix
+          ];
+          homeModules = [ ./modules/home ];
+        };
       };
 
       homeManagerModules = {
-        home = import ./common/home.nix;
+        home = import ./modules/home;
       };
     };
 }
