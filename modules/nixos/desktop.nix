@@ -74,7 +74,8 @@
   };
 
   # Default shell
-  users.defaultUserShell = pkgs.nushell;
+  programs.fish.enable = true;
+  users.defaultUserShell = pkgs.fish;
 
   environment.systemPackages = [ pkgs.discord ];
 }

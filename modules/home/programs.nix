@@ -18,25 +18,24 @@
     };
   };
 
-  programs.zsh = {
+  programs.fish = {
     enable = true;
-    autosuggestion.enable = true;
-    enableCompletion = true;
-    initContent = let
-      darwinSpecific = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
-        # Ensure Nix is loaded after OS upgrade
-        if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-          . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-        fi
+    interactiveShellInit = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+      # Ensure Nix is loaded after OS upgrade
+      if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
+        source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
+      end
+    '';
+    shellInit = ''
+      fish_add_path -a $HOME/.cargo/bin
+    '';
+    functions = {
+      ship = ''
+        git add .
+        git commit -m $argv[1]
+        git push
       '';
-    in ''
-      export PATH="$PATH:$HOME/.cargo/bin"
-
-      if [ -n "''${commands[fzf-share]}" ]; then
-        source "$(fzf-share)/key-bindings.zsh"
-        source "$(fzf-share)/completion.zsh"
-      fi
-    '' + darwinSpecific;
+    };
   };
 
   programs.helix = import ./helix { inherit pkgs; };
@@ -45,7 +44,7 @@
     enable = true;
     settings = {
       font = {
-        normal.family = "IosevkaTerm Nerd Font";
+        normal.family = "JetBrainsMono Nerd Font";
         normal.style = "Medium";
         size = 10.0;
       };
@@ -58,12 +57,12 @@
       builtins.fromTOML (builtins.readFile ./starship-gruvbox.toml);
   in {
     enable = true;
-    enableZshIntegration = true;
-    enableNushellIntegration = true;
+    enableZshIntegration = false;
+    enableNushellIntegration = false;
+    enableFishIntegration = true;
     settings = {
       format = "$all";
       palette = "gruvbox_rainbow";
-      shell.program = "nushell";
     } // starship_gruvbox;
   };
 
@@ -74,12 +73,13 @@
       show_startup_tips = false;
       theme = "gruvbox-dark";
       pane_frames = false;
-      default_shell = "nu";
+      default_shell = "fish";
     };
   };
 
   programs.fzf = {
     enable = true;
+    enableFishIntegration = true;
     colors = {
       "bg+" = "#f2e5bc";
       "bg" = "#fbf1c7";
@@ -98,14 +98,28 @@
 
   programs.direnv = {
     enable = true;
-    enableZshIntegration = true;
-    enableNushellIntegration = true;
+    enableZshIntegration = false;
+    enableNushellIntegration = false;
+    enableFishIntegration = true;
     nix-direnv.enable = true;
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableFishIntegration = true;
   };
 
   programs.gh = {
     enable = true;
     settings.git_protocol = "ssh";
+  };
+
+  programs.lazygit = {
+    enable = true;
+    settings.git.paging = {
+      colorArg = "always";
+      pager = "delta --paging=never --no-gitconfig --line-numbers";
+    };
   };
 
   programs.bottom.enable = true;

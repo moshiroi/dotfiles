@@ -41,7 +41,8 @@
   programs.nix-ld.enable = true;
 
   services.dbus.enable = true;
-  users.defaultUserShell = pkgs.nushell;
+  programs.fish.enable = true;
+  users.defaultUserShell = pkgs.fish;
   fonts.packages = with pkgs; [ nerd-fonts.fira-code ];
 
   users.users.nixos = {

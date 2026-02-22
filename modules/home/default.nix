@@ -11,7 +11,6 @@
   in with pkgs;
   [
     # Linters + formatting
-    nufmt
     nixd
     nixfmt-classic
     vscode-langservers-extracted
@@ -35,14 +34,11 @@
     sd
     zellij
     yazi
-    fzf
-    zoxide
     httpie
     delta
     procs
     nix-output-monitor
     tree
-    lazygit
     git-worktree-tmp
 
     # Python specific
@@ -59,13 +55,26 @@
     top = "btm";
     cat = "bat";
     ls = "eza";
-    tf = "terraform";
     kc = "kubectl";
-    ship = "git add .; git commit -m 'ship'; git push";
     zj = "zellij";
+    # nom wrappers
+    nix-shell = "nom-shell";
+    nix-build = "nom-build";
+    nix-develop = "nom develop";
+    # dev shortcuts
+    tf = "terraform";
+    yz = "yazi";
+    lg = "lazygit";
+    hxp = "hx ~/workspace/git/scratchpad/";
+    # git shortcuts
+    gs = "git status";
+    glo = "git log --oneline --graph --all";
+    gwc = "git-worktree-tmp";
     # WSL only alias
     sdown = "sudo /mnt/c/Windows/System32/shutdown.exe /s /f /t 0";
-    hxp = "hx /git/plan";
+  } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+    pbcopy = "xclip -selection clipboard";
+    pbpaste = "xclip -selection clipboard -o";
   };
 
   home.sessionVariables = {
@@ -74,24 +83,4 @@
     NIXPKGS_ALLOW_UNFREE = 1;
   };
 
-  programs.kitty.enable = true;
-
-  xdg.configFile = lib.mkIf pkgs.stdenv.isLinux {
-    "nushell/config.nu".source = ./nushell/config.nu;
-    "nushell/zoxide.nu".source = ./nushell/zoxide.nu;
-    "nushell/fzf.nu".source = ./nushell/fzf.nu;
-    "nushell/env.nu".source = ./nushell/env.nu;
-    "kitty/kitty.conf".source = ./kitty/kitty.conf;
-    "kitty/theme.conf".source = ./kitty/theme.conf;
-  };
-
-  # Darwin doesnt respect xdg config dirs
-  home.file = lib.mkIf pkgs.stdenv.isDarwin {
-    "Library/Application Support/nushell/config.nu".source = ./nushell/config.nu;
-    "Library/Application Support/nushell/zoxide.nu".source = ./nushell/zoxide.nu;
-    "Library/Application Support/nushell/fzf.nu".source = ./nushell/fzf.nu;
-    "Library/Application Support/nushell/env.nu".source = ./nushell/env.nu;
-    ".config/kitty/kitty.conf".source = ./kitty/kitty.conf;
-    ".config/kitty/theme.conf".source = ./kitty/theme.conf;
-  };
 }

@@ -10,7 +10,7 @@
   users.users.${username} = {
     name = username;
     home = "/Users/${username}";
-    shell = pkgs.nushell;
+    shell = pkgs.fish;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFUJBV5UfedJQE8qPmosVK7s1xbK+VgrhFC7qolLvPo2 mohamedshire@nixos"
     ];

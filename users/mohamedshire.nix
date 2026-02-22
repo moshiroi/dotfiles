@@ -4,7 +4,7 @@
     isNormalUser = true;
     description = "mohamedshire";
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.nushell;
+    shell = pkgs.fish;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBdBDe4ecx1G0o+n9Zu49TcGyZkT+LhONyKToDHvhjqB"  # personal macbook
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIImX1m8CywztA1TkEBd2xSCgJnyzjKrgmdjhlTrWGicL"  # macbook pro
