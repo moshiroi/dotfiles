@@ -9,10 +9,8 @@
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
   ];
-  fonts.fontconfig.defaultFonts = {
-    sansSerif = [ "DejaVu Sans" "Noto Sans CJK JP" ];
-    serif = [ "DejaVu Serif" "Noto Serif CJK JP" ];
-  };
+  programs.fish.enable = true;
+
   nix = {
     package = pkgs.nixVersions.latest;
     extraOptions = ''

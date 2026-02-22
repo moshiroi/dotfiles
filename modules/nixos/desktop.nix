@@ -47,6 +47,11 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  fonts.fontconfig.defaultFonts = {
+    sansSerif = [ "DejaVu Sans" "Noto Sans CJK JP" ];
+    serif = [ "DejaVu Serif" "Noto Serif CJK JP" ];
+  };
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
