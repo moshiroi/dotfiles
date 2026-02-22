@@ -223,6 +223,8 @@
 
   # Used Packages
   home.packages = with pkgs; [
+    # PipeWire-native volume control GUI (switch audio outputs, manage streams)
+    pwvucontrol
     # Inhibits idle when audio is playing (spawned at niri startup)
     sway-audio-idle-inhibit
     gnome-keyring
@@ -254,7 +256,7 @@
     enable = true;
     settings = {
       main = {
-        font = "Iosevka Nerd Font:size=11";
+        font = "JetBrainsMono Nerd Font:size=11";
         terminal = "alacritty -e";
         width = 20;
         lines = 15;
@@ -348,7 +350,7 @@
 
         wireplumber = {
           format = "{icon}";
-          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-click = "pwvucontrol";
           tooltip-format = "{volume}%";
           scroll-step = 5;
           format-muted = "󰝟";
@@ -396,7 +398,7 @@
         border: none;
         border-radius: 0;
         min-height: 0;
-        font-family: "Iosevka Nerd Font";
+        font-family: "JetBrainsMono Nerd Font";
         font-size: 13px;
       }
 
@@ -495,7 +497,7 @@
       separator-color = "00000000";
       indicator-radius = 100;
       indicator-thickness = 10;
-      font = "Iosevka Nerd Font";
+      font = "JetBrainsMono Nerd Font";
       font-size = 24;
       show-failed-attempts = true;
       ignore-empty-password = true;
