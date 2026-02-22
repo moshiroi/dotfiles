@@ -9,6 +9,7 @@
     ../../modules/nixos/bluetooth.nix
     ../../modules/nixos/virtualisation.nix
     ../../modules/nixos/obs.nix
+    ../../modules/nixos/gaming.nix
     ../../users/mohamedshire.nix
   ];
 
