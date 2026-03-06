@@ -20,11 +20,19 @@
 
   programs.fish = {
     enable = true;
-    interactiveShellInit = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
-      # Ensure Nix is loaded after OS upgrade
-      if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-        source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-      end
+    plugins = [
+      { name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish.src; }
+    ];
+    interactiveShellInit = ''
+      ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+        # Ensure Nix is loaded after OS upgrade
+        if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
+          source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
+        end
+      ''}
+      # Rebind fzf.fish process search: Ctrl+Alt+P is swallowed by the
+      # compositor/terminal, so we use Ctrl+Alt+X instead.
+      fzf_configure_bindings --processes=\e\cx
     '';
     shellInit = ''
       fish_add_path -a $HOME/.cargo/bin
@@ -79,7 +87,7 @@
 
   programs.fzf = {
     enable = true;
-    enableFishIntegration = true;
+    enableFishIntegration = false; # handled by fzf.fish plugin
     colors = {
       "bg+" = "#f2e5bc";
       "bg" = "#fbf1c7";
