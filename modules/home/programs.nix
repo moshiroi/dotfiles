@@ -100,7 +100,6 @@
     enable = true;
     enableZshIntegration = false;
     enableNushellIntegration = false;
-    enableFishIntegration = true;
     nix-direnv.enable = true;
   };
 
