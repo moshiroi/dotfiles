@@ -88,20 +88,6 @@
   programs.fzf = {
     enable = true;
     enableFishIntegration = false; # handled by fzf.fish plugin
-    colors = {
-      "bg+" = "#f2e5bc";
-      "bg" = "#fbf1c7";
-      "spinner" = "#d65d0e";
-      "hl" = "#928374";
-      "fg" = "#3c3836";
-      "header" = "#928374";
-      "info" = "#8ec07c";
-      "pointer" = "#d65d0e";
-      "marker" = "#d65d0e";
-      "fg+" = "#3c3836";
-      "prompt" = "#d65d0e";
-      "hl+" = "#d65d0e";
-    };
   };
 
   programs.direnv = {

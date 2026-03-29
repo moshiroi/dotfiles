@@ -134,10 +134,6 @@
         auto-signature-help = false;
       };
 
-      inline-diagnostics = {
-        cursor-line = "error";
-      };
-
       file-picker = { hidden = true; };
     };
   };

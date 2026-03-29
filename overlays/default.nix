@@ -1,5 +1,5 @@
-{ helix }:
+{ helix, llm-agents }:
 [
   helix.overlays.default
-  (import ./claude-code.nix)
+  llm-agents.overlays.default
 ]
