@@ -17,6 +17,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Compressed swap in RAM
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  };
+
+  boot.kernel.sysctl."vm.swappiness" = 180;
+
   networking.hostName = "jarvis";
 
   # Additional packages for desktop

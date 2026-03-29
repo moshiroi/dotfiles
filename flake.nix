@@ -11,6 +11,7 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =
@@ -21,11 +22,12 @@
       helix,
       zen-browser,
       nixos-wsl,
+      llm-agents,
       ...
     }:
     let
       lib = import ./lib { inherit nixpkgs home-manager darwin; };
-      overlays = import ./overlays { inherit helix; };
+      overlays = import ./overlays { inherit helix llm-agents; };
 
       mkPkgs = system: import nixpkgs {
         inherit system overlays;
