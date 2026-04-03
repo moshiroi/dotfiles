@@ -82,6 +82,18 @@
       theme = "gruvbox-dark";
       pane_frames = false;
       default_shell = "fish";
+      keybinds = {
+        normal = {
+          _children = [
+            { bind = { _args = ["F1"]; NewTab = {}; }; }
+            { bind = { _args = ["F2"]; NewPane = { _args = ["stacked"]; }; }; }
+            { bind = { _args = ["F3"]; NewPane = { _args = ["Right"]; }; }; }
+            { bind = { _args = ["F4"]; ToggleFocusFullscreen = {}; }; }
+            { bind = { _args = ["F11"]; CloseFocus = {}; }; }
+            { bind = { _args = ["F12"]; CloseTab = {}; }; }
+          ];
+        };
+      };
     };
   };
 
