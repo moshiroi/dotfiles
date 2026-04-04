@@ -27,7 +27,6 @@
     just
 
     # Dev tooling
-    llm-agents.claude-code
     ripgrep
     eza
     fd

@@ -11,7 +11,8 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
-    llm-agents.url = "github:numtide/llm-agents.nix";
+    claude-config.url = "git+ssh://git@github.com/moshiroi/claude-config";
+    claude-config.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -22,12 +23,12 @@
       helix,
       zen-browser,
       nixos-wsl,
-      llm-agents,
+      claude-config,
       ...
     }:
     let
       lib = import ./lib { inherit nixpkgs home-manager darwin; };
-      overlays = import ./overlays { inherit helix llm-agents; };
+      overlays = import ./overlays { inherit helix; };
 
       mkPkgs = system: import nixpkgs {
         inherit system overlays;
@@ -48,7 +49,7 @@
             ./hosts/wsl
             ./modules/common/system.nix
           ];
-          homeModules = [ ./modules/home ];
+          homeModules = [ ./modules/home claude-config.homeManagerModules.default ];
         };
 
         # x86_64 NixOS config (home pc)
@@ -64,6 +65,7 @@
           homeModules = [
             ./modules/home
             ./modules/home/desktop.nix
+            claude-config.homeManagerModules.default
           ];
         };
       };
@@ -79,7 +81,7 @@
             ./hosts/darwin
             ./modules/common/system.nix
           ];
-          homeModules = [ ./modules/home ];
+          homeModules = [ ./modules/home claude-config.homeManagerModules.default ];
         };
 
         # Intel Mac Pro (x86_64)
@@ -92,7 +94,7 @@
             ./hosts/darwin
             ./modules/common/system.nix
           ];
-          homeModules = [ ./modules/home ];
+          homeModules = [ ./modules/home claude-config.homeManagerModules.default ];
         };
       };
 

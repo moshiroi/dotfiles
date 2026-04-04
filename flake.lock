@@ -3,10 +3,12 @@
     "blueprint": {
       "inputs": {
         "nixpkgs": [
+          "claude-config",
           "llm-agents",
           "nixpkgs"
         ],
         "systems": [
+          "claude-config",
           "llm-agents",
           "systems"
         ]
@@ -28,19 +30,23 @@
     "bun2nix": {
       "inputs": {
         "flake-parts": [
+          "claude-config",
           "llm-agents",
           "flake-parts"
         ],
         "import-tree": "import-tree",
         "nixpkgs": [
+          "claude-config",
           "llm-agents",
           "nixpkgs"
         ],
         "systems": [
+          "claude-config",
           "llm-agents",
           "systems"
         ],
         "treefmt-nix": [
+          "claude-config",
           "llm-agents",
           "treefmt-nix"
         ]
@@ -57,6 +63,28 @@
         "owner": "nix-community",
         "repo": "bun2nix",
         "type": "github"
+      }
+    },
+    "claude-config": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "llm-agents": "llm-agents",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775342680,
+        "narHash": "sha256-tRj9SV9CSLAw0pBzGKtPt4ZNfpDzOnYexBoLvZcYWyk=",
+        "ref": "refs/heads/main",
+        "rev": "51b0b92851679cf9fe301cef9b4bcdfaceaa5555",
+        "revCount": 4,
+        "type": "git",
+        "url": "ssh://git@github.com/moshiroi/claude-config"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/moshiroi/claude-config"
       }
     },
     "darwin": {
@@ -99,6 +127,7 @@
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
+          "claude-config",
           "llm-agents",
           "nixpkgs"
         ]
@@ -119,7 +148,7 @@
     },
     "helix": {
       "inputs": {
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "rust-overlay": "rust-overlay"
       },
       "locked": {
@@ -140,6 +169,27 @@
     "home-manager": {
       "inputs": {
         "nixpkgs": [
+          "claude-config",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775320414,
+        "narHash": "sha256-pIDPHus8udcxO4lT+zUULBfvue2D08E73abzVEJNE+8=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "5ee3b3ef63e469c84639c2c9e282726352c86069",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "home-manager_2": {
+      "inputs": {
+        "nixpkgs": [
           "nixpkgs"
         ]
       },
@@ -157,7 +207,7 @@
         "type": "github"
       }
     },
-    "home-manager_2": {
+    "home-manager_3": {
       "inputs": {
         "nixpkgs": [
           "zen-browser",
@@ -198,16 +248,16 @@
         "blueprint": "blueprint",
         "bun2nix": "bun2nix",
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1775228445,
-        "narHash": "sha256-XvD6OKZgmz6twbqZ9XDOVkIuPwiQl/M5fs0R+EPTieA=",
+        "lastModified": 1775312619,
+        "narHash": "sha256-AqAqwPlaegXf8Ndaywyh9p5k6RV9+E3WIUNPmZGCLDw=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "bc266f481d670bbdf6371c7ebc322e1b310f4eb5",
+        "rev": "19ee079a2c4e73cf6125831594a97ce86e00196b",
         "type": "github"
       },
       "original": {
@@ -240,22 +290,6 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1759381078,
-        "narHash": "sha256-gTrEEp5gEspIcCOx9PD8kMaF1iEmfBcTbO0Jag2QhQs=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "7df7ff7d8e00218376575f0acdcc5d66741351ee",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
         "lastModified": 1775126147,
         "narHash": "sha256-J0dZU4atgcfo4QvM9D92uQ0Oe1eLTxBVXjJzdEMQpD0=",
         "owner": "NixOS",
@@ -266,6 +300,22 @@
       "original": {
         "owner": "NixOS",
         "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1759381078,
+        "narHash": "sha256-gTrEEp5gEspIcCOx9PD8kMaF1iEmfBcTbO0Jag2QhQs=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "7df7ff7d8e00218376575f0acdcc5d66741351ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -304,10 +354,10 @@
     },
     "root": {
       "inputs": {
+        "claude-config": "claude-config",
         "darwin": "darwin",
         "helix": "helix",
-        "home-manager": "home-manager",
-        "llm-agents": "llm-agents",
+        "home-manager": "home-manager_2",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_3",
         "zen-browser": "zen-browser"
@@ -352,6 +402,7 @@
     "treefmt-nix": {
       "inputs": {
         "nixpkgs": [
+          "claude-config",
           "llm-agents",
           "nixpkgs"
         ]
@@ -372,7 +423,7 @@
     },
     "zen-browser": {
       "inputs": {
-        "home-manager": "home-manager_2",
+        "home-manager": "home-manager_3",
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
