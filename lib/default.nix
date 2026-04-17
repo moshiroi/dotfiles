@@ -10,6 +10,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
+            backupFileExtension = "bak";
             users.${username}.imports = homeModules;
             extraSpecialArgs = specialArgs // { inherit username; };
           };
@@ -27,6 +28,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = false;
+            backupFileExtension = "bak";
             users.${username}.imports = homeModules;
             extraSpecialArgs = specialArgs // { inherit username; };
           };
