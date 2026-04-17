@@ -11,45 +11,41 @@
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
-    claude-config.url = "git+ssh://git@github.com/moshiroi/claude-config";
-    claude-config.inputs.nixpkgs.follows = "nixpkgs";
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    claude-config = {
+url = "git+ssh://git@github.com/moshiroi/claude-config";
+      inputs.llm-agents.follows = "llm-agents";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs =
-    {
-      nixpkgs,
-      darwin,
-      home-manager,
-      helix,
-      zen-browser,
-      nixos-wsl,
-      claude-config,
-      ...
-    }:
+  outputs = { nixpkgs, darwin, home-manager, helix, zen-browser, nixos-wsl
+    , claude-config, ... }:
     let
       lib = import ./lib { inherit nixpkgs home-manager darwin; };
       overlays = import ./overlays { inherit helix; };
 
-      mkPkgs = system: import nixpkgs {
-        inherit system overlays;
-        config.allowUnfree = true;
-      };
+      mkPkgs = system:
+        import nixpkgs {
+          inherit system overlays;
+          config.allowUnfree = true;
+        };
 
       specialArgs = { inherit zen-browser; };
-    in
-    {
+    in {
       nixosConfigurations = {
         # WSL2 NixOS config
         nixos = lib.mkNixosSystem {
           hostname = "nixos";
           system = "x86_64-linux";
           username = "nixos";
-          specialArgs = specialArgs // { inherit nixos-wsl; pkgs = mkPkgs "x86_64-linux"; };
-          modules = [
-            ./hosts/wsl
-            ./modules/common/system.nix
-          ];
-          homeModules = [ ./modules/home claude-config.homeManagerModules.default ];
+          specialArgs = specialArgs // {
+            inherit nixos-wsl;
+            pkgs = mkPkgs "x86_64-linux";
+          };
+          modules = [ ./hosts/wsl ./modules/common/system.nix ];
+          homeModules =
+            [ ./modules/home claude-config.homeManagerModules.default ];
         };
 
         # x86_64 NixOS config (home pc)
@@ -58,10 +54,7 @@
           system = "x86_64-linux";
           username = "mohamedshire";
           specialArgs = specialArgs // { pkgs = mkPkgs "x86_64-linux"; };
-          modules = [
-            ./hosts/jarvis
-            ./modules/common/system.nix
-          ];
+          modules = [ ./hosts/jarvis ./modules/common/system.nix ];
           homeModules = [
             ./modules/home
             ./modules/home/desktop.nix
@@ -77,11 +70,9 @@
           system = "aarch64-darwin";
           username = "mohamedshire";
           specialArgs = specialArgs // { pkgs = mkPkgs "aarch64-darwin"; };
-          modules = [
-            ./hosts/darwin
-            ./modules/common/system.nix
-          ];
-          homeModules = [ ./modules/home claude-config.homeManagerModules.default ];
+          modules = [ ./hosts/darwin ./modules/common/system.nix ];
+          homeModules =
+            [ ./modules/home claude-config.homeManagerModules.default ];
         };
 
         # Intel Mac Pro (x86_64)
@@ -90,16 +81,12 @@
           system = "x86_64-darwin";
           username = "mohamedshire";
           specialArgs = specialArgs // { pkgs = mkPkgs "x86_64-darwin"; };
-          modules = [
-            ./hosts/darwin
-            ./modules/common/system.nix
-          ];
-          homeModules = [ ./modules/home claude-config.homeManagerModules.default ];
+          modules = [ ./hosts/darwin ./modules/common/system.nix ];
+          homeModules =
+            [ ./modules/home claude-config.homeManagerModules.default ];
         };
       };
 
-      homeManagerModules = {
-        home = import ./modules/home;
-      };
+      homeManagerModules = { home = import ./modules/home; };
     };
 }
