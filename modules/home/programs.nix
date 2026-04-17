@@ -43,6 +43,9 @@
         git commit -m $argv[1]
         git push
       '';
+      rv = ''
+        direnv exec ~/workspace/git/rv cargo run --manifest-path ~/workspace/git/rv/Cargo.toml --quiet -- $argv
+      '';
     };
   };
 
