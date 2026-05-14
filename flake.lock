@@ -31,7 +31,6 @@
           "llm-agents",
           "flake-parts"
         ],
-        "import-tree": "import-tree",
         "nixpkgs": [
           "llm-agents",
           "nixpkgs"
@@ -46,16 +45,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1776182890,
-        "narHash": "sha256-+/VOe8XGq5klpU+I19D+3TcaR7o+Cwbq67KNF7mcFak=",
-        "owner": "Mic92",
+        "lastModified": 1778445566,
+        "narHash": "sha256-oQvcadh2BCkrog+SGrG6YffKJrveYpjj3TdQJWaKhaM=",
+        "owner": "nix-community",
         "repo": "bun2nix",
-        "rev": "648d293c51e981aec9cb07ba4268bc19e7a8c575",
+        "rev": "2499dedd70744dba1815875b854818a3019e9e4c",
         "type": "github"
       },
       "original": {
-        "owner": "Mic92",
-        "ref": "catalog-support",
+        "owner": "nix-community",
+        "ref": "staging-2.1.0",
         "repo": "bun2nix",
         "type": "github"
       }
@@ -71,11 +70,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775876806,
-        "narHash": "sha256-NXVvyEbg5pJ2tUQq0gCHk/wxYGm7n4cum+Bgd0cAJFs=",
+        "lastModified": 1778542944,
+        "narHash": "sha256-7r2nbHd8DNW0eaow/1l+TEHjgQQEK6vvP+TRy5UufJc=",
         "ref": "refs/heads/main",
-        "rev": "1e13a36dfb6a80e4f5790a4faf4af45d847da6d5",
-        "revCount": 7,
+        "rev": "78c826be43a5b3648858c3434cc3f1139b2991b1",
+        "revCount": 9,
         "type": "git",
         "url": "ssh://git@github.com/moshiroi/claude-config"
       },
@@ -129,11 +128,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775087534,
-        "narHash": "sha256-91qqW8lhL7TLwgQWijoGBbiD4t7/q75KTi8NxjVmSmA=",
+        "lastModified": 1778716662,
+        "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "3107b77cd68437b9a76194f0f7f9c55f2329ca5b",
+        "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
         "type": "github"
       },
       "original": {
@@ -224,21 +223,6 @@
         "type": "github"
       }
     },
-    "import-tree": {
-      "locked": {
-        "lastModified": 1763762820,
-        "narHash": "sha256-ZvYKbFib3AEwiNMLsejb/CWs/OL/srFQ8AogkebEPF0=",
-        "owner": "vic",
-        "repo": "import-tree",
-        "rev": "3c23749d8013ec6daa1d7255057590e9ca726646",
-        "type": "github"
-      },
-      "original": {
-        "owner": "vic",
-        "repo": "import-tree",
-        "type": "github"
-      }
-    },
     "llm-agents": {
       "inputs": {
         "blueprint": "blueprint",
@@ -249,11 +233,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1776384037,
-        "narHash": "sha256-Q38I4yAYAkq2xRrMb479WRE0dELZXVegWpCiEhcxGoU=",
+        "lastModified": 1778762370,
+        "narHash": "sha256-7fcbvf+GWGG0C2pWElh8Q0YgX41U6NohdvUGBjkxt00=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "4dd328159ccd0c359e2bdf3b535cc130e486c9ab",
+        "rev": "9b98dcf7a74f67820987871e1dd102ff90519d15",
         "type": "github"
       },
       "original": {
@@ -302,11 +286,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1776255774,
-        "narHash": "sha256-psVTpH6PK3q1htMJpmdz1hLF5pQgEshu7gQWgKO6t6Y=",
+        "lastModified": 1778672786,
+        "narHash": "sha256-Blg88K1jwG+P0Mr27+rKMFCufdrWkV3wWh9AdYtz0FQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "566acc07c54dc807f91625bb286cb9b321b5f42a",
+        "rev": "eef00dfd8a712b34af845f9350bac681b1228bd1",
         "type": "github"
       },
       "original": {
