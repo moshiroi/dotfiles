@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }: {
+{ lib, pkgs, rv, ... }: {
   imports = [
     ./programs.nix
   ];
@@ -36,10 +36,13 @@
     linear-cli
     httpie
     delta
+    rv.packages.${pkgs.system}.default
     procs
     nix-output-monitor
     tree
     git-worktree-tmp
+    numbat
+    libqalculate # provides the `qalc` CLI (bitwise ops, base conversion)
 
     # Python specific
     pyenv

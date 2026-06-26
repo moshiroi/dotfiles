@@ -12,6 +12,9 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
     llm-agents.url = "github:numtide/llm-agents.nix";
+    # rv — my terminal-native diff reviewer (replaces hunk). Uses its own
+    # nixpkgs (unstable): crane requires nixpkgs >= 25.11, newer than 25.05.
+    rv.url = "git+ssh://git@github.com/moshiroi/rv";
     claude-config = {
 url = "git+ssh://git@github.com/moshiroi/claude-config";
       inputs.llm-agents.follows = "llm-agents";
@@ -20,7 +23,7 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
   };
 
   outputs = { nixpkgs, darwin, home-manager, helix, zen-browser, nixos-wsl
-    , claude-config, ... }:
+    , claude-config, rv, ... }:
     let
       lib = import ./lib { inherit nixpkgs home-manager darwin; };
       overlays = import ./overlays { inherit helix; };
@@ -31,7 +34,7 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
           config.allowUnfree = true;
         };
 
-      specialArgs = { inherit zen-browser; };
+      specialArgs = { inherit zen-browser rv; };
     in {
       nixosConfigurations = {
         # WSL2 NixOS config
@@ -44,8 +47,10 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
             pkgs = mkPkgs "x86_64-linux";
           };
           modules = [ ./hosts/wsl ./modules/common/system.nix ];
-          homeModules =
-            [ ./modules/home claude-config.homeManagerModules.default ];
+          homeModules = [
+            ./modules/home
+            claude-config.homeManagerModules.default
+          ];
         };
 
         # x86_64 NixOS config (home pc)
@@ -71,8 +76,10 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
           username = "mohamedshire";
           specialArgs = specialArgs // { pkgs = mkPkgs "aarch64-darwin"; };
           modules = [ ./hosts/darwin ./modules/common/system.nix ];
-          homeModules =
-            [ ./modules/home claude-config.homeManagerModules.default ];
+          homeModules = [
+            ./modules/home
+            claude-config.homeManagerModules.default
+          ];
         };
 
         # Intel Mac Pro (x86_64)
@@ -82,8 +89,10 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
           username = "mohamedshire";
           specialArgs = specialArgs // { pkgs = mkPkgs "x86_64-darwin"; };
           modules = [ ./hosts/darwin ./modules/common/system.nix ];
-          homeModules =
-            [ ./modules/home claude-config.homeManagerModules.default ];
+          homeModules = [
+            ./modules/home
+            claude-config.homeManagerModules.default
+          ];
         };
       };
 
