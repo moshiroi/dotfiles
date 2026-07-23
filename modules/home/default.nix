@@ -33,7 +33,7 @@
     sd
     zellij
     yazi
-    linear-cli
+    # linear-cli
     httpie
     delta
     procs
