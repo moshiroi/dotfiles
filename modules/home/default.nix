@@ -14,8 +14,8 @@
     nixd
     nixfmt-classic
     vscode-langservers-extracted
-    nodePackages.prettier
-    nodePackages.typescript-language-server
+    prettier
+    typescript-language-server
     bash-language-server
     shfmt
 
