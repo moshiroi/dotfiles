@@ -505,29 +505,8 @@
     };
   };
 
-  # Idle daemon - locks screen and powers off monitors
-  services.swayidle = {
-    enable = true;
-    systemdTarget = "graphical-session.target";
-    timeouts = [
-      {
-        timeout = 300;
-        command = "${pkgs.swaylock}/bin/swaylock";
-      }
-      {
-        timeout = 600;
-        command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
-      }
-    ];
-    events = [
-      {
-        event = "before-sleep";
-        command = "${pkgs.swaylock}/bin/swaylock";
-      }
-      {
-        event = "lock";
-        command = "${pkgs.swaylock}/bin/swaylock";
-      }
-    ];
-  };
+  # Idle daemon disabled: the screen should only lock via the manual
+  # Super+Alt+L keybind (which spawns swaylock directly, see niri config
+  # above), never automatically — no idle timeout, no lock-on-suspend.
+  services.swayidle.enable = false;
 }
