@@ -23,7 +23,7 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
   };
 
   outputs = { nixpkgs, darwin, home-manager, helix, zen-browser, nixos-wsl
-    , claude-config, rv, ... }:
+    , claude-config, rv, llm-agents, ... }:
     let
       lib = import ./lib { inherit nixpkgs home-manager darwin; };
       overlays = import ./overlays { inherit helix; };
@@ -34,7 +34,7 @@ url = "git+ssh://git@github.com/moshiroi/claude-config";
           config.allowUnfree = true;
         };
 
-      specialArgs = { inherit zen-browser rv; };
+      specialArgs = { inherit zen-browser rv llm-agents; };
     in {
       nixosConfigurations = {
         # WSL2 NixOS config

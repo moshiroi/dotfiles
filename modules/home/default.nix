@@ -1,4 +1,4 @@
-{ lib, pkgs, rv, ... }: {
+{ lib, pkgs, rv, llm-agents, ... }: {
   imports = [
     ./programs.nix
   ];
@@ -37,6 +37,9 @@
     httpie
     delta
     rv.packages.${pkgs.system}.default
+    # opencode — terminal AI coding agent, from llm-agents.nix (which pins its
+    # own nixpkgs, so this builds against that rather than our 25.05).
+    llm-agents.packages.${pkgs.system}.opencode
     procs
     nix-output-monitor
     tree
