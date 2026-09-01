@@ -15,9 +15,11 @@
     # rv — my terminal-native diff reviewer (replaces hunk). Uses its own
     # nixpkgs (unstable): crane requires nixpkgs >= 25.11, newer than 25.05.
     rv.url = "git+ssh://git@github.com/moshiroi/rv";
+    # claude-config no longer takes an llm-agents input: claude-code is
+    # installed out of band via the native installer so it can self-update.
+    # llm-agents stays above for opencode.
     claude-config = {
-url = "git+ssh://git@github.com/moshiroi/claude-config";
-      inputs.llm-agents.follows = "llm-agents";
+      url = "git+ssh://git@github.com/moshiroi/claude-config";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
