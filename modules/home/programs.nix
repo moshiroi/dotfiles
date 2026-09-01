@@ -36,6 +36,10 @@
     '';
     shellInit = ''
       fish_add_path -a $HOME/.cargo/bin
+      # Out-of-band installs (claude-code's self-updating native installer,
+      # pipx, cargo-installed shims). Prepended so a self-updating tool wins
+      # over a stale copy in the nix profile.
+      fish_add_path -p $HOME/.local/bin
     '';
     functions = {
       ship = ''
