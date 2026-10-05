@@ -5,7 +5,6 @@
   ];
 
   home.stateVersion = "22.11";
-  nixpkgs.config.allowUnfree = true;
   home.packages = let
     git-worktree-tmp = pkgs.writeShellScriptBin "git-worktree-tmp"
       (builtins.readFile ../../scripts/git-worktree-tmp.sh);
@@ -15,8 +14,8 @@
     nixd
     nixfmt-classic
     vscode-langservers-extracted
-    nodePackages.prettier
-    nodePackages.typescript-language-server
+    prettier
+    typescript-language-server
     bash-language-server
     shfmt
 

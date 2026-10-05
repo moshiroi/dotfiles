@@ -2,19 +2,23 @@
 {
   programs.git = {
     enable = true;
-    aliases = { s = "status"; };
-    userName = "moshiroi";
-    userEmail = "mqsas1337@gmail.com";
     lfs.enable = true;
-    extraConfig = { init.defaultBranch = "main"; };
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        light = false;
-        line-numbers = true;
-        side-by-side = true;
-      };
+    settings = {
+      alias = { s = "status"; };
+      user.name = "moshiroi";
+      user.email = "mqsas1337@gmail.com";
+      init.defaultBranch = "main";
+    };
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true;
+      light = false;
+      line-numbers = true;
+      side-by-side = true;
     };
   };
 

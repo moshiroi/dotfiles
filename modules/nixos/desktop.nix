@@ -15,7 +15,6 @@
     enable = true;
     type = "fcitx5";
     fcitx5 = {
-      plasma6Support = true;
       waylandFrontend = true;
       ignoreUserConfig = true;
       addons = with pkgs; [

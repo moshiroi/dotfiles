@@ -244,9 +244,9 @@
     wlr-randr
     wayland-utils
     xcb-util-cursor
-    xorg.libxcb
-    xorg.xprop
-    xorg.xkbcomp
+    libxcb
+    xprop
+    xkbcomp
   ];
 
   programs.zen-browser.enable = true;

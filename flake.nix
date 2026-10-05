@@ -2,10 +2,10 @@
   description = "NixOS + nix-darwin + Home Manager configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    home-manager.url = "github:nix-community/home-manager";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+    darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     helix.url = "github:helix-editor/helix/master";
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
@@ -13,7 +13,8 @@
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
     llm-agents.url = "github:numtide/llm-agents.nix";
     # rv — my terminal-native diff reviewer (replaces hunk). Uses its own
-    # nixpkgs (unstable): crane requires nixpkgs >= 25.11, newer than 25.05.
+    # nixpkgs (unstable): crane requires nixpkgs >= 25.11; left unfollowed so
+    # rv builds against the nixpkgs it is developed/tested with.
     rv.url = "git+ssh://git@github.com/moshiroi/rv";
     # claude-config no longer takes an llm-agents input: claude-code is
     # installed out of band via the native installer so it can self-update.
