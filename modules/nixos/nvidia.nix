@@ -14,6 +14,10 @@
       open = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       modesetting.enable = true;
+      # Save VRAM across suspend; without it the GPU loses its state on
+      # resume and the displays come back dead. On open modules >= 595
+      # this uses kernel suspend notifiers rather than nvidia-sleep.sh.
+      powerManagement.enable = true;
     };
 
     graphics = {
