@@ -1,6 +1,7 @@
 { lib, pkgs, rv, llm-agents, ... }: {
   imports = [
     ./programs.nix
+    ./remote-theme.nix
   ];
 
   home.stateVersion = "22.11";
