@@ -67,6 +67,42 @@
     };
   };
 
+  # Default terminal (replacing alacritty, which stays installed as a fallback).
+  programs.ghostty = {
+    enable = true;
+    # nixpkgs only builds ghostty for Linux; on macOS install Ghostty.app
+    # separately and let home-manager just manage the config.
+    package = if pkgs.stdenv.hostPlatform.isDarwin then null else pkgs.ghostty;
+    enableFishIntegration = true;
+    settings = {
+      # Gruvbox Dark, inlined because the bundled theme name differs between
+      # ghostty releases ("GruvboxDark" vs "Gruvbox Dark").
+      background = "#282828";
+      foreground = "#ebdbb2";
+      cursor-color = "#ebdbb2";
+      cursor-text = "#282828";
+      selection-background = "#665c54";
+      selection-foreground = "#ebdbb2";
+      palette = [
+        "0=#282828" "1=#cc241d" "2=#98971a" "3=#d79921"
+        "4=#458588" "5=#b16286" "6=#689d6a" "7=#a89984"
+        "8=#928374" "9=#fb4934" "10=#b8bb26" "11=#fabd2f"
+        "12=#83a598" "13=#d3869b" "14=#8ec07c" "15=#ebdbb2"
+      ];
+      font-family = "JetBrainsMono Nerd Font";
+      font-style = "Medium";
+      font-size = 10;
+      window-decoration = false;
+      confirm-close-surface = false;
+      macos-option-as-alt = "left";
+    } // lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin
+      || lib.versionAtLeast pkgs.ghostty.version "1.2") {
+      # Fall back to TERM=xterm-256color on hosts without ghostty's terminfo
+      # (option added in ghostty 1.2; the macOS app is always current).
+      shell-integration-features = "ssh-env";
+    };
+  };
+
   programs.starship = let
     starship_gruvbox =
       builtins.fromTOML (builtins.readFile ./starship-gruvbox.toml);
@@ -88,6 +124,9 @@
       show_startup_tips = false;
       theme = "gruvbox-dark";
       pane_frames = false;
+      # zellij 0.45 replaced the one-line-per-pane stack with a title list at
+      # the top; keep the old look.
+      stacked_pane_list = false;
       default_shell = "fish";
       keybinds = {
         normal = {

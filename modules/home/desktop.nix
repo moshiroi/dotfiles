@@ -57,7 +57,7 @@
 
     binds {
         Mod+Shift+Slash { show-hotkey-overlay; }
-        Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
+        Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
         Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
         Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
         Super+Alt+S hotkey-overlay-title=null { spawn "sh" "-c" "pkill orca || exec orca"; }
@@ -257,7 +257,7 @@
     settings = {
       main = {
         font = "JetBrainsMono Nerd Font:size=11";
-        terminal = "alacritty -e";
+        terminal = "ghostty -e";
         width = 20;
         lines = 15;
       };

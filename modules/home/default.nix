@@ -85,7 +85,7 @@
 
   home.sessionVariables = {
     EDITOR = "hx";
-    TERMINAL = "alacritty";
+    TERMINAL = "ghostty";
     NIXPKGS_ALLOW_UNFREE = 1;
   };
 
