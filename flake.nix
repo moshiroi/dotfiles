@@ -28,8 +28,8 @@
   outputs = { nixpkgs, darwin, home-manager, helix, zen-browser, nixos-wsl
     , claude-config, rv, llm-agents, ... }:
     let
-      lib = import ./lib { inherit nixpkgs home-manager darwin; };
       overlays = import ./overlays { inherit helix; };
+      lib = import ./lib { inherit nixpkgs home-manager darwin overlays; };
 
       mkPkgs = system:
         import nixpkgs {
@@ -45,10 +45,7 @@
           hostname = "nixos";
           system = "x86_64-linux";
           username = "nixos";
-          specialArgs = specialArgs // {
-            inherit nixos-wsl;
-            pkgs = mkPkgs "x86_64-linux";
-          };
+          specialArgs = specialArgs // { inherit nixos-wsl; };
           modules = [ ./hosts/wsl ./modules/common/system.nix ];
           homeModules = [
             ./modules/home
@@ -61,7 +58,7 @@
           hostname = "jarvis";
           system = "x86_64-linux";
           username = "mohamedshire";
-          specialArgs = specialArgs // { pkgs = mkPkgs "x86_64-linux"; };
+          inherit specialArgs;
           modules = [ ./hosts/jarvis ./modules/common/system.nix ];
           homeModules = [
             ./modules/home

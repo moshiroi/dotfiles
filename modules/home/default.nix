@@ -8,11 +8,12 @@
   home.packages = let
     git-worktree-tmp = pkgs.writeShellScriptBin "git-worktree-tmp"
       (builtins.readFile ../../scripts/git-worktree-tmp.sh);
+    system = pkgs.stdenv.hostPlatform.system;
   in with pkgs;
   [
     # Linters + formatting
     nixd
-    nixfmt-classic
+    nixfmt
     vscode-langservers-extracted
     prettier
     typescript-language-server
@@ -36,10 +37,15 @@
     linear-cli
     httpie
     delta
-    rv.packages.${pkgs.system}.default
-    # opencode — terminal AI coding agent, from llm-agents.nix (which pins its
-    # own nixpkgs, so this builds against that rather than our 25.05).
-    llm-agents.packages.${pkgs.system}.opencode
+    rv.packages.${system}.default
+  ]
+  # opencode — terminal AI coding agent, from llm-agents.nix (which pins its
+  # own nixpkgs, so this builds against that rather than ours).
+  # llm-agents doesn't publish every platform (no x86_64-darwin), so only
+  # include them where it does.
+  ++ lib.optionals (llm-agents.packages ? ${system}) [
+    llm-agents.packages.${system}.opencode
+  ] ++ [
     procs
     nix-output-monitor
     tree
