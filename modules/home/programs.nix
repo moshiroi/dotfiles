@@ -96,7 +96,6 @@
       font-family = "JetBrainsMono Nerd Font";
       font-style = "Medium";
       font-size = 10;
-      window-decoration = false;
       confirm-close-surface = false;
       macos-option-as-alt = "left";
     } // lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin
@@ -104,6 +103,9 @@
       # Fall back to TERM=xterm-256color on hosts without ghostty's terminfo
       # (option added in ghostty 1.2; the macOS app is always current).
       shell-integration-features = "ssh-env";
+    } // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      # niri tiles and moves windows itself; keep native title bar on macOS.
+      window-decoration = false;
     };
   };
 
