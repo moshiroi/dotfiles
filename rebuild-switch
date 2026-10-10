@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
-if [ $(uname -o) = "Darwin" ]; then
-  echo "Switching darwin profile" 
-  sudo darwin-rebuild switch --flake .
+set -euo pipefail
+
+# Evaluate and build as the invoking user so private flake inputs
+# (git+ssh) are fetched with their SSH key; only activation runs as root.
+if [ "$(uname -o)" = "Darwin" ]; then
+  echo "Switching darwin profile"
+  darwin-rebuild build --flake .
+  system=$(readlink -f result)
+  sudo nix-env -p /nix/var/nix/profiles/system --set "$system"
+  sudo "$system/activate"
 else
   echo "Switching nixos profile"
-  sudo nixos-rebuild switch --flake . 
+  nixos-rebuild switch --flake . --sudo
 fi
-
-
