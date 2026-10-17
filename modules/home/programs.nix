@@ -98,6 +98,12 @@
       font-size = 10;
       confirm-close-surface = false;
       macos-option-as-alt = "left";
+      # Ghostty maps these to esc:b / esc:f (word jumps), which zellij reads
+      # as Alt+f (ToggleFloatingPanes). Unbind so zellij gets real arrows.
+      keybind = [
+        "alt+arrow_left=unbind"
+        "alt+arrow_right=unbind"
+      ];
     } // lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin
       || lib.versionAtLeast pkgs.ghostty.version "1.2") {
       # Fall back to TERM=xterm-256color on hosts without ghostty's terminfo
