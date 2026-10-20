@@ -39,12 +39,14 @@
     delta
     rv.packages.${system}.default
   ]
-  # opencode — terminal AI coding agent, from llm-agents.nix (which pins its
-  # own nixpkgs, so this builds against that rather than ours).
+  # opencode, codex-cli — terminal AI coding agents, from llm-agents.nix
+  # (which pins its own nixpkgs, so these build against that rather than
+  # our 25.05).
   # llm-agents doesn't publish every platform (no x86_64-darwin), so only
   # include them where it does.
   ++ lib.optionals (llm-agents.packages ? ${system}) [
     llm-agents.packages.${system}.opencode
+    llm-agents.packages.${system}.codex
   ] ++ [
     procs
     nix-output-monitor
