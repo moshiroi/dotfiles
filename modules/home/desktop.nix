@@ -60,6 +60,7 @@
         Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
         Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
         Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+        Super+Alt+Z hotkey-overlay-title="Sleep" { spawn "systemctl" "suspend"; }
         Super+Alt+S hotkey-overlay-title=null { spawn "sh" "-c" "pkill orca || exec orca"; }
 
         XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"; }
@@ -173,6 +174,7 @@
         Mod+Ctrl+R { reset-window-height; }
         Mod+F { maximize-column; }
         Mod+Shift+F { fullscreen-window; }
+        Mod+Return { fullscreen-window; }
 
         Mod+Ctrl+F { expand-column-to-available-width; }
 
@@ -223,6 +225,7 @@
 
   # Used Packages
   home.packages = with pkgs; [
+    anki-bin
     # PipeWire-native volume control GUI (switch audio outputs, manage streams)
     pwvucontrol
     # Inhibits idle when audio is playing (spawned at niri startup)
