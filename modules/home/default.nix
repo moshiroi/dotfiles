@@ -77,7 +77,7 @@
     tf = "terraform";
     yz = "yazi";
     lg = "lazygit";
-    hxp = "hx ~/workspace/git/scratchpad/";
+    hxp = "hx /data/git/scratchpad/";
     # git shortcuts
     gs = "git status";
     glo = "git log --oneline --graph --all";
