@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware.nix
+    ./storage.nix
     ../../modules/nixos/desktop.nix
     ../../modules/nixos/nvidia.nix
     ../../modules/nixos/networking.nix
