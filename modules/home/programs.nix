@@ -98,11 +98,14 @@
       font-size = 10;
       confirm-close-surface = false;
       macos-option-as-alt = "left";
-      # Ghostty maps these to esc:b / esc:f (word jumps), which zellij reads
-      # as Alt+f (ToggleFloatingPanes). Unbind so zellij gets real arrows.
+      # Ghostty maps alt+arrows to esc:b / esc:f (word jumps), which zellij
+      # reads as Alt+f (ToggleFloatingPanes). Unbind so zellij gets real arrows.
+      # Its default ctrl+enter=toggle_fullscreen also swallows the key before
+      # TUIs see it (Claude Code submits on ctrl+enter); niri covers fullscreen.
       keybind = [
         "alt+arrow_left=unbind"
         "alt+arrow_right=unbind"
+        "ctrl+enter=unbind"
       ];
     } // lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin
       || lib.versionAtLeast pkgs.ghostty.version "1.2") {
