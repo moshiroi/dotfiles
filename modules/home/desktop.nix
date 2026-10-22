@@ -200,6 +200,9 @@
         Mod+Shift+S hotkey-overlay-title="Screenshot: select region to clipboard" { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
         Mod+Shift+A hotkey-overlay-title="Screenshot: full screen to clipboard" { spawn "sh" "-c" "grim - | wl-copy"; }
 
+        // Screen recording: press once to pick a region and start, again to stop
+        Mod+Shift+X hotkey-overlay-title="Screen record: select region (toggle)" { spawn "sh" "-c" "pgrep -x wf-recorder >/dev/null && pkill -INT -x wf-recorder || { mkdir -p ~/Videos/Screencasts && wf-recorder -g \"$(slurp)\" -f ~/Videos/Screencasts/rec-$(date +%F-%H%M%S).mp4; }"; }
+
         Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 
         Mod+Shift+E { quit; }
@@ -241,6 +244,8 @@
     # Screenshots
     grim
     slurp
+    # Screen recording (Mod+Shift+X)
+    wf-recorder
     # Image Viewer
     imv
     # XWayland/Wayland
