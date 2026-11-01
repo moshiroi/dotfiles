@@ -1,4 +1,4 @@
-{ config, zen-browser, pkgs, ... }:
+{ config, zen-browser, pkgs, lib, ... }:
 let
   font = config.dotfiles.terminalFont;
 in
@@ -260,6 +260,39 @@ in
     xprop
     xkbcomp
   ];
+
+  # Video player: mpv with the uosc on-screen UI and seek-bar thumbnails
+  programs.mpv = {
+    enable = true;
+    scripts = with pkgs.mpvScripts; [
+      uosc
+      thumbfast
+    ];
+    config = {
+      profile = "high-quality";
+      vo = "gpu-next";
+      hwdec = "auto-safe";
+      # uosc replaces the stock OSC and title bar
+      osc = "no";
+      osd-bar = "no";
+      border = "no";
+      save-position-on-quit = true;
+    };
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = lib.genAttrs [
+      "video/mp4"
+      "video/x-matroska"
+      "video/webm"
+      "video/quicktime"
+      "video/x-msvideo"
+      "audio/mpeg"
+      "audio/flac"
+      "audio/ogg"
+    ] (_: "mpv.desktop");
+  };
 
   programs.zen-browser.enable = true;
 
