@@ -62,7 +62,7 @@
           modules = [ ./hosts/jarvis ./modules/common/system.nix ];
           homeModules = [
             ./modules/home
-            ./modules/home/desktop.nix
+            ./modules/home/desktop
             claude-config.homeManagerModules.default
           ];
         };
