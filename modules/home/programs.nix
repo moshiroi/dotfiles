@@ -1,6 +1,9 @@
 { config, lib, pkgs, ... }:
 let
   font = config.dotfiles.terminalFont;
+  # Lichen, the desktop palette (modules/theme); the terminal uses its
+  # surfaces with Gruvbox Material hues
+  p = (import ../theme { inherit lib; }).palette;
 in
 {
   programs.git = {
@@ -84,23 +87,43 @@ in
     package = if pkgs.stdenv.hostPlatform.isDarwin then null else pkgs.ghostty;
     enableFishIntegration = true;
     settings = {
-      # Gruvbox Dark, inlined because the bundled theme name differs between
-      # ghostty releases ("GruvboxDark" vs "Gruvbox Dark").
-      background = "#282828";
-      foreground = "#ebdbb2";
-      cursor-color = "#ebdbb2";
-      cursor-text = "#282828";
-      selection-background = "#665c54";
-      selection-foreground = "#ebdbb2";
-      palette = [
-        "0=#282828" "1=#cc241d" "2=#98971a" "3=#d79921"
-        "4=#458588" "5=#b16286" "6=#689d6a" "7=#a89984"
-        "8=#928374" "9=#fb4934" "10=#b8bb26" "11=#fabd2f"
-        "12=#83a598" "13=#d3869b" "14=#8ec07c" "15=#ebdbb2"
+      # Lichen surfaces and text with Gruvbox Material hues: Gruvbox's
+      # colours in the same slots, desaturated, so code reads as before
+      # without glaring in a dim room. Normal and bright share hues, as in
+      # Gruvbox Material; bright black is lifted for comments.
+      background = p.term.background;
+      foreground = p.term.foreground;
+      cursor-color = p.text;
+      cursor-text = p.window;
+      selection-background = p.term.selection;
+      selection-foreground = p.text;
+      palette = let t = p.term; in [
+        "0=${t.black}" "1=${t.red}" "2=${t.green}" "3=${t.yellow}"
+        "4=${t.blue}" "5=${t.magenta}" "6=${t.cyan}" "7=${t.white}"
+        "8=${t.brightBlack}" "9=${t.red}" "10=${t.green}" "11=${t.yellow}"
+        "12=${t.blue}" "13=${t.magenta}" "14=${t.cyan}" "15=${t.brightWhite}"
       ];
       font-family = font.family;
       font-style = font.style;
       font-size = font.size;
+      # 15% more leading than the font's default, so dense output (diffs,
+      # logs) has room to breathe without shrinking the type.
+      adjust-cell-height = "15%";
+      # Even margins on all sides instead of text touching the window edge;
+      # balance centres the cell grid so leftover pixels split evenly, and
+      # extend paints the padding with the cell background (no seams).
+      window-padding-x = 14;
+      window-padding-y = 10;
+      window-padding-balance = true;
+      window-padding-color = "extend";
+      # Slightly translucent, blurred behind by niri (see the ghostty window
+      # rule in desktop/niri.nix) and by Ghostty itself on macOS.
+      background-opacity = 0.94;
+      background-blur = true;
+      # Thin bar cursor at the prompt (helix still sets its own per mode),
+      # and dim unfocused splits so the active one stands out
+      cursor-style = "bar";
+      unfocused-split-opacity = 0.85;
       confirm-close-surface = false;
       macos-option-as-alt = "left";
       # Ghostty maps alt+arrows to esc:b / esc:f (word jumps), which zellij
@@ -142,7 +165,22 @@ in
     enableZshIntegration = false;
     settings = {
       show_startup_tips = false;
-      theme = "gruvbox-dark";
+      # Lichen, so the tab/status bar matches the desktop: sage marks the
+      # active tab and mode; remote-theme.nix still swaps this line for SSH
+      theme = "lichen";
+      themes.lichen = {
+        fg = p.text;
+        bg = p.raised;
+        black = p.window;
+        red = p.error;
+        green = p.accent;
+        yellow = p.warning;
+        blue = p.term.blue;
+        magenta = p.term.magenta;
+        cyan = p.term.cyan;
+        white = p.text;
+        orange = p.warning;
+      };
       pane_frames = false;
       # zellij 0.45 replaced the one-line-per-pane stack with a title list at
       # the top; keep the old look.
