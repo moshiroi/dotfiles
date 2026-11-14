@@ -299,7 +299,45 @@ in
       "audio/mpeg"
       "audio/flac"
       "audio/ogg"
-    ] (_: "mpv.desktop");
+    ] (_: "mpv.desktop") // lib.genAttrs [
+      "image/png"
+      "image/jpeg"
+      "image/gif"
+      "image/webp"
+      "image/avif"
+      "image/bmp"
+      "image/svg+xml"
+    ] (_: "swayimg.desktop");
+  };
+
+  # Image viewer: swayimg, Gruvbox styled to match fuzzel and waybar
+  programs.swayimg = {
+    enable = true;
+    settings = {
+      general.decoration = "no";
+      viewer = {
+        window = "#282828ff";
+        scale = "optimal";
+      };
+      gallery = {
+        size = 220;
+        padding = 8;
+        aspect = "fill";
+        background = "#32302fff";
+        select = "#504945ff";
+        border_color = "#d65d0eff";
+        border_width = 3;
+        window = "#282828ff";
+      };
+      font = {
+        name = "JetBrainsMono Nerd Font";
+        size = 12;
+        color = "#ebdbb2ff";
+        shadow = "#00000000";
+        background = "#282828cc";
+      };
+      info.show = "yes";
+    };
   };
 
   programs.zen-browser.enable = true;
