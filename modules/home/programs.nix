@@ -49,6 +49,8 @@ in
       fish_add_path -p $HOME/.local/bin
     '';
     functions = {
+      # Silence the "Welcome to fish… type help" banner on every new shell.
+      fish_greeting = "";
       ship = ''
         git add .
         git commit -m $argv[1]
