@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1240" viewBox="0 0 1180 1240">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a89984"/>
+    </marker>
+    <marker id="ay" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#d8a657"/>
+    </marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a9b665"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', Menlo, monospace; fill: #ebdbb2; }
+    .h1 { font-size: 40px; font-weight: 700; }
+    .h2 { font-size: 25px; font-weight: 700; }
+    .b  { font-size: 20px; }
+    .s  { font-size: 17px; fill: #a89984; }
+    .k  { font-size: 18px; fill: #1d2021; font-weight: 700; }
+  </style>
+
+  <rect width="1180" height="1240" fill="#1d2021"/>
+
+  <text x="40" y="66" class="h1">How MCP works</text>
+  <text x="40" y="102" class="s">Model Context Protocol: one standard plug between AI apps and the tools/data they use</text>
+
+  <!-- HOST -->
+  <rect x="40" y="140" width="420" height="440" rx="18" fill="#292929" stroke="#7daea3" stroke-width="3"/>
+  <text x="66" y="182" class="h2" style="fill:#7daea3">HOST</text>
+  <text x="66" y="210" class="s">the AI app, e.g. Claude Code</text>
+
+  <rect x="66" y="236" width="368" height="120" rx="12" fill="#404040"/>
+  <text x="90" y="276" class="h2">LLM</text>
+  <text x="90" y="306" class="b">reads tool list,</text>
+  <text x="90" y="332" class="b">decides what to call</text>
+
+  <rect x="66" y="384" width="368" height="74" rx="12" fill="#3f7556"/>
+  <text x="90" y="430" class="h2" style="fill:#fbf1c7">MCP client  #1</text>
+  <rect x="66" y="476" width="368" height="74" rx="12" fill="#3f7556"/>
+  <text x="90" y="522" class="h2" style="fill:#fbf1c7">MCP client  #2</text>
+
+  <line x1="250" y1="358" x2="250" y2="382" stroke="#a89984" stroke-width="4"/>
+
+  <!-- SERVERS -->
+  <rect x="720" y="384" width="420" height="74" rx="12" fill="#292929" stroke="#d8a657" stroke-width="3"/>
+  <text x="744" y="418" class="h2" style="fill:#d8a657">MCP server: GitHub</text>
+  <text x="744" y="444" class="s">tools · resources · prompts</text>
+
+  <rect x="720" y="476" width="420" height="74" rx="12" fill="#292929" stroke="#d8a657" stroke-width="3"/>
+  <text x="744" y="510" class="h2" style="fill:#d8a657">MCP server: Postgres</text>
+  <text x="744" y="536" class="s">tools · resources · prompts</text>
+
+  <!-- transport lines -->
+  <line x1="436" y1="421" x2="716" y2="421" stroke="#d8a657" stroke-width="3" marker-end="url(#ay)" marker-start="url(#ay)"/>
+  <line x1="436" y1="513" x2="716" y2="513" stroke="#d8a657" stroke-width="3" marker-end="url(#ay)" marker-start="url(#ay)"/>
+  <text x="482" y="406" class="s">JSON-RPC 2.0</text>
+  <text x="482" y="498" class="s">stdio or HTTP</text>
+  <text x="482" y="582" class="s">one client per server, 1:1</text>
+
+  <!-- external -->
+  <rect x="720" y="160" width="420" height="160" rx="18" fill="#292929" stroke="#928374" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="744" y="200" class="h2" style="fill:#928374">The outside world</text>
+  <text x="744" y="236" class="b">GitHub API, databases,</text>
+  <text x="744" y="262" class="b">files, Slack, browsers…</text>
+  <text x="744" y="296" class="s">servers wrap these</text>
+  <line x1="930" y1="380" x2="930" y2="324" stroke="#a89984" stroke-width="3" marker-end="url(#a)"/>
+
+  <!-- what servers expose -->
+  <text x="40" y="660" class="h2">What a server exposes</text>
+  <rect x="40"  y="680" width="350" height="110" rx="12" fill="#404040"/>
+  <rect x="415" y="680" width="350" height="110" rx="12" fill="#404040"/>
+  <rect x="790" y="680" width="350" height="110" rx="12" fill="#404040"/>
+  <text x="62" y="718" class="h2" style="fill:#ea6962">Tools</text>
+  <text x="62" y="750" class="b">actions the model calls</text>
+  <text x="62" y="774" class="s">create_issue(), run_query()</text>
+  <text x="437" y="718" class="h2" style="fill:#89b482">Resources</text>
+  <text x="437" y="750" class="b">data the app can read</text>
+  <text x="437" y="774" class="s">file://, db rows, docs</text>
+  <text x="812" y="718" class="h2" style="fill:#d3869b">Prompts</text>
+  <text x="812" y="750" class="b">reusable templates</text>
+  <text x="812" y="774" class="s">/review-pr, /summarise</text>
+
+  <!-- flow -->
+  <text x="40" y="860" class="h2">One tool call, step by step</text>
+  <g>
+    <circle cx="60" cy="904" r="18" fill="#a9b665"/><text x="60" y="910" class="k" text-anchor="middle">1</text>
+    <text x="94" y="910" class="b">initialize: client and server agree on version + capabilities</text>
+    <circle cx="60" cy="958" r="18" fill="#a9b665"/><text x="60" y="964" class="k" text-anchor="middle">2</text>
+    <text x="94" y="964" class="b">tools/list: server describes its tools (name + JSON schema)</text>
+    <circle cx="60" cy="1012" r="18" fill="#a9b665"/><text x="60" y="1018" class="k" text-anchor="middle">3</text>
+    <text x="94" y="1018" class="b">LLM picks a tool; host asks you to approve if needed</text>
+    <circle cx="60" cy="1066" r="18" fill="#a9b665"/><text x="60" y="1072" class="k" text-anchor="middle">4</text>
+    <text x="94" y="1072" class="b">tools/call {name, arguments} → server does the real work</text>
+    <circle cx="60" cy="1120" r="18" fill="#a9b665"/><text x="60" y="1126" class="k" text-anchor="middle">5</text>
+    <text x="94" y="1126" class="b">result comes back → added to the LLM's context → answer</text>
+  </g>
+  <text x="40" y="1200" class="s">Write a server once, and every MCP host (Claude, IDEs, agents) can use it.</text>
+</svg>
