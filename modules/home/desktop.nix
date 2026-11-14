@@ -1,4 +1,8 @@
-{ zen-browser, pkgs, ... }: {
+{ config, zen-browser, pkgs, ... }:
+let
+  font = config.dotfiles.terminalFont;
+in
+{
   imports = [ zen-browser.homeModules.beta ];
 
   # Niri config file
@@ -264,7 +268,7 @@
     enable = true;
     settings = {
       main = {
-        font = "JetBrainsMono Nerd Font:size=11";
+        font = "${font.family}:size=11";
         terminal = "ghostty -e";
         width = 20;
         lines = 15;
@@ -406,7 +410,7 @@
         border: none;
         border-radius: 0;
         min-height: 0;
-        font-family: "JetBrainsMono Nerd Font";
+        font-family: "${font.family}";
         font-size: 13px;
       }
 
@@ -505,7 +509,7 @@
       separator-color = "00000000";
       indicator-radius = 100;
       indicator-thickness = 10;
-      font = "JetBrainsMono Nerd Font";
+      font = font.family;
       font-size = 24;
       show-failed-attempts = true;
       ignore-empty-password = true;

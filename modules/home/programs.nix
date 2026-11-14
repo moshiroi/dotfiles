@@ -1,4 +1,7 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+let
+  font = config.dotfiles.terminalFont;
+in
 {
   programs.git = {
     enable = true;
@@ -63,9 +66,9 @@
     enable = true;
     settings = {
       font = {
-        normal.family = "JetBrainsMono Nerd Font";
-        normal.style = "Medium";
-        size = 10.0;
+        normal.family = font.family;
+        normal.style = font.style;
+        size = font.size * 1.0; # alacritty wants a float
       };
       window.option_as_alt = "OnlyLeft";
     };
@@ -93,9 +96,9 @@
         "8=#928374" "9=#fb4934" "10=#b8bb26" "11=#fabd2f"
         "12=#83a598" "13=#d3869b" "14=#8ec07c" "15=#ebdbb2"
       ];
-      font-family = "JetBrainsMono Nerd Font";
-      font-style = "Medium";
-      font-size = 10;
+      font-family = font.family;
+      font-style = font.style;
+      font-size = font.size;
       confirm-close-surface = false;
       macos-option-as-alt = "left";
       # Ghostty maps alt+arrows to esc:b / esc:f (word jumps), which zellij
