@@ -15,9 +15,17 @@ in
     spawn-at-startup "sway-audio-idle-inhibit"
 
     // Monitor configuration
-    output "DP-5" {
+    // Matched by make/model/serial: connector names (DP-N) get renumbered
+    // across kernel/driver updates. LG 4K is rotated portrait, left of the
+    // Samsung. At scale 1.25 it is 1728x3072 logical, so x=-1728 makes the
+    // edges touch and y=-996 centres it on the Samsung's 1080px height.
+    output "LG Electronics LG ULTRAFINE 109NTTQ42441" {
+        scale 1.25
         transform "90"
-        position x=-2160 y=-1300
+        position x=-1728 y=-996
+    }
+    output "Samsung Electric Company LC27RG50 H4ZNA01160" {
+        position x=0 y=0
     }
 
     // Visual layout settings
@@ -510,9 +518,10 @@ in
     enable = true;
     settings = {
       # Main monitor (Samsung 1080p landscape)
-      DP-6 = { path = "${./wallpapers/landscape.png}"; };
+      # (connector names; check `niri msg outputs` if they get renumbered)
+      DP-3 = { path = "${./wallpapers/landscape.png}"; };
       # Secondary monitor (LG 4K portrait/rotated)
-      DP-5 = { path = "${./wallpapers/portrait.png}"; };
+      DP-2 = { path = "${./wallpapers/portrait.png}"; };
     };
   };
 
