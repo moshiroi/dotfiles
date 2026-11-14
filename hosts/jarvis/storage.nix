@@ -15,7 +15,10 @@ in
   # of identical blocks, so they collapse well. The OS drive stays plain ext4.
   services.lvm.package = pkgs.lvm2_vdo;
   environment.systemPackages = [ pkgs.vdo ];
-  boot.kernelModules = [ "dm-vdo" ];
+  # Load dm-vdo in the initrd: LVM autoactivates the VG there as soon as the PV
+  # appears, and without the vdo target the LV fails and is never retried, so
+  # /data silently misses the boot (nofail). Stays loaded after switch-root.
+  boot.initrd.kernelModules = [ "dm-vdo" ];
 
   # The pool is overcommitted (1.5T virtual on 931G physical); dmeventd logs a
   # warning as physical usage climbs, before writes start failing.
