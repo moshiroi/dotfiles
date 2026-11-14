@@ -5,7 +5,7 @@
 #   ghostty both honour OSC 11) and reset it when the command exits. Works for
 #   every host, including ones that don't run this config.
 # - Remotely (machines running this config, e.g. coder): shells started over
-#   ssh/coder get a red/purple starship palette and a different zellij theme.
+#   ssh/coder get a wine/red starship palette and a different zellij theme.
 { config, lib, pkgs, ... }:
 let
   remoteBg = "#3c1f1e";
@@ -16,9 +16,14 @@ let
     // {
       palette = "remote";
       palettes = starship.palettes // {
+        # Wine-tinted pill and a red accent, so a remote shell never looks
+        # like a local one
         remote = starship.palettes.${starship.palette} // {
-          color_orange = "#cc241d";
-          color_yellow = "#b16286";
+          surface = "#3c2624";
+          accent = "#c8776f";
+          # The local `err` is the same red as this accent, so a failed
+          # command's ❯ would look like a successful one
+          err = "#d3869b";
         };
       };
     }

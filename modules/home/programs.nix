@@ -146,18 +146,12 @@ in
     };
   };
 
-  programs.starship = let
-    starship_gruvbox =
-      builtins.fromTOML (builtins.readFile ./starship-gruvbox.toml);
-  in {
+  programs.starship = {
     enable = true;
     enableZshIntegration = false;
     enableNushellIntegration = false;
     enableFishIntegration = true;
-    settings = {
-      format = "$all";
-      palette = "gruvbox_rainbow";
-    } // starship_gruvbox;
+    settings = import ./starship.nix p;
   };
 
   programs.zellij = {
