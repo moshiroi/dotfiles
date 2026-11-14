@@ -1,5 +1,6 @@
 { lib, pkgs, rv, llm-agents, ... }: {
   imports = [
+    ./font.nix
     ./programs.nix
     ./remote-theme.nix
   ];
