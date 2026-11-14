@@ -4,6 +4,7 @@
     ./programs.nix
     ./remote-theme.nix
     ./rex
+    ./explain
   ];
 
   home.stateVersion = "22.11";

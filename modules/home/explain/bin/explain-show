@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# explain-show FILE [--below]
+#   Open FILE in explain-view, in a Rex pane beside the caller. Reuses the
+#   slot: an earlier explain pane in this session is closed first, so there
+#   is only ever one. Focus stays where it was. The pane closes on `q`.
+#
+# Outside Rex it just runs explain-view in the current terminal.
+set -euo pipefail
+
+[ $# -ge 1 ] || { echo "usage: explain-show FILE [--below]" >&2; exit 2; }
+file=$(realpath "$1")
+[ -e "$file" ] || { echo "explain-show: no such file: $1" >&2; exit 1; }
+split=right
+[ "${2:-}" = "--below" ] && split=below
+
+if [ -z "${REX_SESSION:-}" ] || ! command -v rex >/dev/null; then
+  exec explain-view "$file"
+fi
+
+# close the previous explain pane, if any
+rex block ls -s "$REX_SESSION" --json \
+  | jq -r '.blocks[] | select(.label == "explain") | .block_id' \
+  | while read -r b; do rex block close -s "$REX_SESSION" "$b" >/dev/null || true; done
+
+anchor=()
+[ -n "${REX_BLOCK:-}" ] && anchor=(-b "$REX_BLOCK")
+new=$(rex split -s "$REX_SESSION" ${anchor[@]+"${anchor[@]}"} --split="$split" --focus=false --json \
+        -- explain-view "$file" | jq -r '.block_ids[0] // empty')
+[ -n "$new" ] && rex block rename -s "$REX_SESSION" "$new" explain >/dev/null
+echo "explain: showing $(basename "$file") in pane ${new:-?}"

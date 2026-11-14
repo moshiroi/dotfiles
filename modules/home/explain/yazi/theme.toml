@@ -1,0 +1,114 @@
+# yazi theme: gruvbox-material (matches helix custom-cat, Rex, starship).
+# Only colours are set here; yazi keeps its default symbols and layout.
+#
+#   bg0 #1d2021  bg1 #282828  bg2 #32302f  bg3 #3c3836  bg4 #504945
+#   grey #928374  fg #ebdbb2  fg1 #d4be98
+#   red #ea6962  orange #e78a4e  yellow #d8a657  green #a9b665
+#   aqua #89b482  blue #7daea3  purple #d3869b
+
+[mgr]
+cwd = { fg = "#7daea3", bold = true }
+
+find_keyword  = { fg = "#d8a657", bold = true, underline = true }
+find_position = { fg = "#d3869b", bold = true }
+
+marker_copied   = { fg = "#a9b665", bg = "#a9b665" }
+marker_cut      = { fg = "#ea6962", bg = "#ea6962" }
+marker_marked   = { fg = "#89b482", bg = "#89b482" }
+marker_selected = { fg = "#d8a657", bg = "#d8a657" }
+
+count_copied   = { fg = "#1d2021", bg = "#a9b665" }
+count_cut      = { fg = "#1d2021", bg = "#ea6962" }
+count_selected = { fg = "#1d2021", bg = "#d8a657" }
+
+border_style = { fg = "#504945" }
+
+[indicator]
+parent  = { fg = "#ebdbb2", bg = "#3c3836" }
+current = { fg = "#1d2021", bg = "#d8a657", bold = true }
+preview = { fg = "#ebdbb2", bg = "#3c3836" }
+
+[tabs]
+active   = { fg = "#1d2021", bg = "#7daea3", bold = true }
+inactive = { fg = "#928374", bg = "#32302f" }
+
+[mode]
+normal_main = { fg = "#1d2021", bg = "#7daea3", bold = true }
+normal_alt  = { fg = "#7daea3", bg = "#32302f" }
+select_main = { fg = "#1d2021", bg = "#d3869b", bold = true }
+select_alt  = { fg = "#d3869b", bg = "#32302f" }
+unset_main  = { fg = "#1d2021", bg = "#ea6962", bold = true }
+unset_alt   = { fg = "#ea6962", bg = "#32302f" }
+
+[status]
+perm_sep   = { fg = "#504945" }
+perm_type  = { fg = "#7daea3" }
+perm_read  = { fg = "#d8a657" }
+perm_write = { fg = "#ea6962" }
+perm_exec  = { fg = "#a9b665" }
+progress_label  = { fg = "#ebdbb2", bold = true }
+progress_normal = { fg = "#a9b665", bg = "#32302f" }
+progress_error  = { fg = "#ea6962", bg = "#32302f" }
+
+[which]
+mask            = { bg = "#282828" }
+cand            = { fg = "#89b482" }
+rest            = { fg = "#928374" }
+desc            = { fg = "#d3869b" }
+separator_style = { fg = "#504945" }
+
+[confirm]
+border  = { fg = "#7daea3" }
+title   = { fg = "#7daea3" }
+btn_yes = { fg = "#1d2021", bg = "#d8a657" }
+
+[spot]
+border   = { fg = "#7daea3" }
+title    = { fg = "#7daea3" }
+tbl_col  = { fg = "#7daea3" }
+tbl_cell = { fg = "#1d2021", bg = "#d8a657" }
+
+[notify]
+title_info  = { fg = "#a9b665" }
+title_warn  = { fg = "#d8a657" }
+title_error = { fg = "#ea6962" }
+
+[pick]
+border = { fg = "#7daea3" }
+active = { fg = "#d3869b", bold = true }
+
+[input]
+border   = { fg = "#7daea3" }
+selected = { fg = "#1d2021", bg = "#d8a657" }
+
+[cmp]
+border = { fg = "#7daea3" }
+active = { fg = "#1d2021", bg = "#d8a657" }
+
+[tasks]
+border  = { fg = "#7daea3" }
+hovered = { fg = "#d3869b", bold = true }
+
+[help]
+on      = { fg = "#89b482" }
+run     = { fg = "#d3869b" }
+hovered = { fg = "#1d2021", bg = "#d8a657", bold = true }
+footer  = { fg = "#1d2021", bg = "#d4be98" }
+
+[filetype]
+rules = [
+  # explainers
+  { url = "*.png", fg = "#d8a657" },
+  { url = "*.svg", fg = "#d8a657" },
+  { url = "*.md",  fg = "#89b482" },
+  { url = "*.ans", fg = "#e78a4e" },
+  # general
+  { mime = "image/*", fg = "#d8a657" },
+  { mime = "{audio,video}/*", fg = "#d3869b" },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#ea6962" },
+  { mime = "application/{pdf,doc,rtf}", fg = "#89b482" },
+  { mime = "vfs/{absent,stale}", fg = "#928374" },
+  { url = "*", is = "orphan", fg = "#ea6962" },
+  { url = "*", is = "exec", fg = "#a9b665" },
+  { url = "*/", fg = "#7daea3" },
+]

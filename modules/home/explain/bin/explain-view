@@ -1,0 +1,246 @@
+#!/usr/bin/env -S python3 -B
+"""explain-view: show explainer files inside the terminal.
+
+  explain-view FILE              view FILE; ←/→ moves through its folder
+  explain-view --render FILE W   print FILE rendered to W columns (yazi preview)
+
+  images (png/jpg/gif)  kitty graphics protocol, fitted to the pane
+  svg                   rendered with rsvg-convert, then drawn
+  markdown (.md)        glow, gruvbox style, wrapped to the pane width
+  text (.ans/.txt)      printed with its colours, cut to the pane width
+
+Keys:  ← / h  previous file    → / l  next file    q / esc / enter  back
+       scroll: mouse wheel / trackpad, space·f / b page, d / u half page,
+               ↑↓ / j k line, g / G top / bottom (space at the end = next file)
+
+Nothing is ever wider than the pane, so there is no sideways scrolling.
+"""
+import base64, fcntl, os, pty, re, select, struct, subprocess, sys, tempfile, termios, tty
+
+GLOW = os.environ.get("EXPLAIN_GLOW", "glow")
+RSVG = os.environ.get("EXPLAIN_RSVG", "rsvg-convert")
+GLOW_STYLE = os.environ.get("EXPLAIN_GLOW_STYLE",
+                            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "glow-gruvbox.json"))
+KINDS = {".png": "image", ".jpg": "image", ".jpeg": "image", ".gif": "image",
+         ".svg": "svg", ".md": "doc", ".ans": "text", ".txt": "text"}
+
+out = sys.stdout.buffer
+def rgb(h): return f"\x1b[38;2;{int(h[1:3],16)};{int(h[3:5],16)};{int(h[5:7],16)}m"
+R, B, GREY, AQUA = "\x1b[0m", "\x1b[1m", rgb("#928374"), rgb("#89b482")
+
+def term_size():
+    rows, cols, xpx, ypx = struct.unpack("HHHH", fcntl.ioctl(1, termios.TIOCGWINSZ, b"\0" * 8))
+    return rows, cols, (xpx // cols if xpx else 14), (ypx // rows if ypx else 32)
+
+def png_size(path):
+    with open(path, "rb") as f:
+        head = f.read(24)
+    return struct.unpack(">II", head[16:24]) if head[:8] == b"\x89PNG\r\n\x1a\n" else (0, 0)
+
+def clear():
+    out.write(b"\x1b_Ga=d,q=2\x1b\\\x1b[2J\x1b[3J\x1b[H"); out.flush()
+
+def draw_image(path):
+    rows, cols, cw, ch = term_size()
+    avail_c, avail_r = cols - 2, rows - 4          # room for header + footer
+    w, h = png_size(path)
+    # fit inside the pane: limit by whichever side runs out first
+    args = f"c={avail_c}"
+    if w and h and (h / ch) * (avail_c * cw / w) > avail_r:
+        args = f"r={avail_r}"
+    data = base64.standard_b64encode(open(path, "rb").read())
+    out.write(b" ")
+    for i in range(0, len(data), 4096):
+        more = 1 if i + 4096 < len(data) else 0
+        head = f"f=100,a=T,q=2,C=0,{args},m={more}" if i == 0 else f"m={more}"
+        out.write(b"\x1b_G" + head.encode() + b";" + data[i:i + 4096] + b"\x1b\\")
+    out.flush()
+
+def header(path, idx, total):
+    print(f" {B}explain{R} {GREY}·{R} {AQUA}{sanitize(os.path.basename(path)).replace(chr(27), "")}{R}  {GREY}{idx+1}/{total}{R}\n", flush=True)
+
+def footer():
+    rows = term_size()[0]
+    out.write(f"\x1b[{rows};1H {GREY}←/→ prev/next · q back{R}".encode()); out.flush()
+
+KEYS = {
+    b"\x1b[C": "next", b"l": "next", b"n": "next",
+    b"\x1b[D": "prev", b"h": "prev", b"p": "prev",
+    b"\x1b[B": "down", b"j": "down", b"\x1b[A": "up", b"k": "up",
+    b"d": "half", b"\x04": "half", b"u": "halfup", b"\x15": "halfup",
+    b" ": "page", b"\x1b[6~": "page", b"f": "page", b"\x06": "page",
+    b"\x1b[5~": "pageup", b"b": "pageup", b"\x02": "pageup",
+    b"g": "top", b"\x1b[H": "top", b"G": "bottom", b"\x1b[F": "bottom",
+    b"q": "quit", b"\x1b": "quit", b"\r": "quit", b"\x03": "quit",
+}
+WHEEL = re.compile(rb"\x1b\[<(\d+);\d+;\d+[Mm]")
+WHEEL_LINES = 3                                   # lines per wheel notch
+
+def key():
+    """Wait for input. Returns (action, amount). A fast wheel or trackpad
+    swipe arrives as a burst of events, summed into one scroll."""
+    fd = sys.stdin.fileno(); old = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd); k = os.read(fd, 1024)
+        # a lone ESC may be the start of a split sequence (arrow, wheel):
+        # wait briefly for the rest before treating it as "quit"
+        while k.endswith(b"\x1b") or (k.startswith(b"\x1b[") and not re.search(rb"[A-Za-z~]$", k)):
+            if not select.select([fd], [], [], 0.05)[0]:
+                break
+            k += os.read(fd, 1024)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+    events = WHEEL.findall(k)
+    if events:                                    # SGR mouse: 64 = wheel up, 65 = down
+        net = sum(-1 if e == b"64" else 1 if e == b"65" else 0 for e in events)
+        return ("scroll", net * WHEEL_LINES) if net else (None, 0)
+    if k[:1] == b"\x1b" and len(k) > 1 and k not in KEYS:
+        k = k[:3] if k[2:3] != b"[" else k        # first escape sequence of a burst
+    return KEYS.get(k, KEYS.get(k[:1]) if k[:1] != b"\x1b" else None), 1
+
+MOUSE_ON, MOUSE_OFF = b"\x1b[?1000h\x1b[?1006h", b"\x1b[?1000l\x1b[?1006l"
+
+def siblings(path):
+    d = os.path.dirname(os.path.abspath(path))
+    files = sorted(f for f in os.listdir(d)
+                   if not f.startswith(".") and os.path.splitext(f)[1].lower() in KINDS)
+    return [os.path.join(d, f) for f in files]
+
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+# Only colour/style codes (SGR, "ESC[...m") are allowed through. Everything
+# else a file could carry (OSC 52 clipboard writes, title changes, cursor
+# moves, DCS/APC strings, other C0/C1 controls) is dropped, so viewing an
+# untrusted .ans/.txt/.md can't drive the terminal.
+_CONTROLS = re.compile(r"[\x00-\x08\x0b-\x1a\x1c-\x1f\x7f\x80-\x9f]")  # all C0/C1 but \t \n ESC
+_STRING = re.compile(r"\x1b[\]P_^X].*?(?:\x07|\x1b\\|$)", re.S)       # OSC DCS APC PM SOS
+_CSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+_SGR_SPLIT = re.compile(r"(\x1b\[[0-9;:]*m)")
+
+def sanitize(text):
+    """Keep SGR colour codes, drop every other escape sequence and control.
+
+    Safe by construction, not by ordering: controls go first (so nothing
+    removed later can splice an ESC onto new bytes), then the text is split
+    around valid SGR codes and every ESC in the pieces between them is
+    removed. The only ESCs that survive are the SGR codes themselves."""
+    text = text.replace("\r\n", "\n").replace("\r", "")
+    text = _CONTROLS.sub("", text)
+    text = _STRING.sub("", text)
+    parts = _SGR_SPLIT.split(text)
+    for i in range(0, len(parts), 2):               # even = between SGR codes
+        parts[i] = _CSI.sub("", parts[i]).replace("\x1b", "")
+    return "".join(parts)
+
+def fit(line, width):
+    """Cut a coloured line to `width` visible cells, so nothing ever needs
+    horizontal scrolling. Escape codes are kept; text past the edge becomes …"""
+    if len(ANSI.sub("", line)) <= width:
+        return line
+    outl, seen, i = [], 0, 0
+    while i < len(line) and seen < width - 1:
+        m = ANSI.match(line, i)
+        if m:
+            outl.append(m.group()); i = m.end(); continue
+        outl.append(line[i]); seen += 1; i += 1
+    return "".join(outl) + R + GREY + "…" + R
+
+def tty_run(cmd, env, cols):
+    """Run cmd on a pseudo-terminal and return its output. glow only emits
+    exact (truecolor) colours when it believes it is writing to a terminal;
+    piped, it falls back to the 16 basic colours."""
+    master, slave = pty.openpty()
+    fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 500, cols, 0, 0))
+    proc = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=slave, stderr=slave, env=env)
+    os.close(slave)
+    chunks = []
+    while True:
+        try:
+            data = os.read(master, 65536)
+        except OSError:              # EIO once the child closes the pty
+            break
+        if not data:
+            break
+        chunks.append(data)
+    os.close(master); proc.wait()
+    return b"".join(chunks).decode("utf-8", "replace").replace("\r\n", "\n")
+
+def render_lines(path, kind, width):
+    if kind == "doc":
+        env = dict(os.environ, COLORTERM="truecolor", TERM="xterm-256color")
+        text = tty_run([GLOW, "-s", GLOW_STYLE, "-w", str(width), path], env, width + 2)
+    else:
+        text = open(path, encoding="utf-8", errors="replace").read()
+    lines = sanitize(text).strip("\n").split("\n")
+    return [fit(l, width) for l in lines]
+
+def scroll_view(path, kind, idx, total):
+    """Text and documents: our own vertical scroller. ←/→ always change file."""
+    rows, cols, _, _ = term_size()
+    lines = render_lines(path, kind, cols - 2)
+    view = rows - 4                                   # header 2 + footer 1 + gap
+    last = max(0, len(lines) - view)
+    more = len(lines) > view
+    half = max(1, view // 2)
+    top = 0
+    clear(); header(path, idx, total)
+    out.write(MOUSE_ON)
+    try:
+        while True:
+            # repaint only the body and footer, line by line, clearing leftovers
+            body = lines[top:top + view] + [""] * (view - len(lines[top:top + view]))
+            out.write(b"\x1b[3;1H" + "".join(l + "\x1b[K\r\n" for l in body).encode())
+            where = f"{top + 1}-{min(top + view, len(lines))}/{len(lines)} · " if more else ""
+            hint = "wheel/space/d·u scroll · " if more else ""
+            out.write(f"\x1b[{rows};1H\x1b[K {GREY}{where}{hint}←/→ prev/next · q back{R}".encode())
+            out.flush()
+            k, n = key()
+            if k == "next": return 1
+            if k == "prev": return -1
+            if k == "quit": return 0
+            if k == "page" and top >= last: return 1  # space at the end: next file
+            step = {"down": 1, "up": -1, "scroll": n, "half": half, "halfup": -half,
+                    "page": view - 2, "pageup": -(view - 2)}.get(k)
+            if step is not None: top = max(0, min(last, top + step))
+            elif k == "top": top = 0
+            elif k == "bottom": top = last
+    finally:
+        out.write(MOUSE_OFF); out.flush()
+
+def show(path, idx, total):
+    """Show one file. Returns a step (-1/+1) or 0 to quit."""
+    kind = KINDS.get(os.path.splitext(path)[1].lower())
+    if kind in ("doc", "text"):
+        return scroll_view(path, kind, idx, total)
+    clear(); header(path, idx, total)
+    if kind == "image":
+        draw_image(path)
+    elif kind == "svg":
+        with tempfile.NamedTemporaryFile(suffix=".png") as tmp:
+            subprocess.run([RSVG, "-o", tmp.name, path], check=True)
+            draw_image(tmp.name)
+    footer()
+    while True:
+        k, _ = key()
+        if k in ("next", "page"): return 1
+        if k == "prev": return -1
+        if k == "quit": return 0
+
+def main(path):
+    files = siblings(path)
+    path = os.path.abspath(path)
+    i = files.index(path) if path in files else 0
+    if path not in files: files.insert(0, path)
+    while True:
+        step = show(files[i], i, len(files))
+        if step == 0: break
+        i = (i + step) % len(files)
+    clear()
+
+if __name__ == "__main__":
+    if sys.argv[1] == "--render":          # used by the yazi preview plugin
+        f, width = sys.argv[2], int(sys.argv[3])
+        kind = KINDS.get(os.path.splitext(f)[1].lower(), "text")
+        sys.stdout.write("\n".join(render_lines(f, kind, width)) + "\n")
+    else:
+        main(sys.argv[1])
