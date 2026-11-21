@@ -1,98 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1240" viewBox="0 0 1180 1240">
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="950" viewBox="0 0 840 950">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#a89984"/>
-    </marker>
-    <marker id="ay" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#d8a657"/>
-    </marker>
-    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#a9b665"/>
+      <path d="M1,1.5 L9,5 L1,8.5" fill="none" stroke="#a8a295" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
   <style>
-    text { font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', Menlo, monospace; fill: #ebdbb2; }
-    .h1 { font-size: 40px; font-weight: 700; }
-    .h2 { font-size: 25px; font-weight: 700; }
-    .b  { font-size: 20px; }
-    .s  { font-size: 17px; fill: #a89984; }
-    .k  { font-size: 18px; fill: #1d2021; font-weight: 700; }
+    text  { font-family: Charter, Georgia, serif; fill: #d6d0c2; }
+    .title{ font-size: 34px; }
+    .sub  { font-size: 18px; fill: #a8a295; }
+    .sec  { font-size: 14px; letter-spacing: 2.4px; fill: #857f73; }
+    .h    { font-size: 22px; }
+    .w    { font-size: 19px; }
+    .n    { font-size: 16px; fill: #a8a295; }
+    .m    { font-size: 16px; fill: #a8a295; }
+    .c    { font-family: 'JetBrainsMono Nerd Font', Menlo, monospace; font-size: 16px; fill: #bfb9ab; font-variant-ligatures: none; }
+    .ink  { fill: none; stroke: #a8a295; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+    .lead { fill: none; stroke: #78746a; stroke-width: 1; stroke-dasharray: 1 4; stroke-linecap: round; }
+    .rule { stroke: #32302d; stroke-width: 1; }
   </style>
 
-  <rect width="1180" height="1240" fill="#1d2021"/>
+  <rect width="840" height="950" fill="#201f1d"/>
 
-  <text x="40" y="66" class="h1">How MCP works</text>
-  <text x="40" y="102" class="s">Model Context Protocol: one standard plug between AI apps and the tools/data they use</text>
+  <text x="48" y="74" class="title">How flingd search works</text>
+  <text x="48" y="106" class="sub">Two ways of finding a save, run side by side and merged by rank.</text>
+  <line x1="48" y1="136" x2="792" y2="136" class="rule"/>
+  <line x1="568" y1="160" x2="568" y2="920" class="rule"/>
 
-  <!-- HOST -->
-  <rect x="40" y="140" width="420" height="440" rx="18" fill="#292929" stroke="#7daea3" stroke-width="3"/>
-  <text x="66" y="182" class="h2" style="fill:#7daea3">HOST</text>
-  <text x="66" y="210" class="s">the AI app, e.g. Claude Code</text>
+  <!-- I. INDEX -->
+  <text x="48" y="182" class="sec">I · INDEX</text>
 
-  <rect x="66" y="236" width="368" height="120" rx="12" fill="#404040"/>
-  <text x="90" y="276" class="h2">LLM</text>
-  <text x="90" y="306" class="b">reads tool list,</text>
-  <text x="90" y="332" class="b">decides what to call</text>
+  <text x="48" y="232" class="c" style="font-size:17px;fill:#d6d0c2">links</text>
+  <path d="M106 226 H232" class="ink" marker-end="url(#a)"/>
+  <g class="ink"><ellipse cx="254" cy="216" rx="11" ry="4"/><path d="M243 216 V238 A11 4 0 0 0 265 238 V216"/></g>
+  <text x="276" y="230" class="c" style="font-size:15px">tsvector</text>
+  <text x="276" y="252" class="n">+ pg_trgm on url</text>
 
-  <rect x="66" y="384" width="368" height="74" rx="12" fill="#3f7556"/>
-  <text x="90" y="430" class="h2" style="fill:#fbf1c7">MCP client  #1</text>
-  <rect x="66" y="476" width="368" height="74" rx="12" fill="#3f7556"/>
-  <text x="90" y="522" class="h2" style="fill:#fbf1c7">MCP client  #2</text>
+  <path d="M70 244 V282" class="ink" marker-end="url(#a)"/>
+  <text x="48" y="308" class="w">Job queue</text>
+  <path d="M70 320 V358" class="ink" marker-end="url(#a)"/>
+  <text x="48" y="384" class="w">Embed worker</text>
+  <path d="M184 378 H234" class="ink" marker-end="url(#a)" marker-start="url(#a)"/>
+  <text x="246" y="384" class="w">Gemini</text>
 
-  <line x1="250" y1="358" x2="250" y2="382" stroke="#a89984" stroke-width="4"/>
-
-  <!-- SERVERS -->
-  <rect x="720" y="384" width="420" height="74" rx="12" fill="#292929" stroke="#d8a657" stroke-width="3"/>
-  <text x="744" y="418" class="h2" style="fill:#d8a657">MCP server: GitHub</text>
-  <text x="744" y="444" class="s">tools · resources · prompts</text>
-
-  <rect x="720" y="476" width="420" height="74" rx="12" fill="#292929" stroke="#d8a657" stroke-width="3"/>
-  <text x="744" y="510" class="h2" style="fill:#d8a657">MCP server: Postgres</text>
-  <text x="744" y="536" class="s">tools · resources · prompts</text>
-
-  <!-- transport lines -->
-  <line x1="436" y1="421" x2="716" y2="421" stroke="#d8a657" stroke-width="3" marker-end="url(#ay)" marker-start="url(#ay)"/>
-  <line x1="436" y1="513" x2="716" y2="513" stroke="#d8a657" stroke-width="3" marker-end="url(#ay)" marker-start="url(#ay)"/>
-  <text x="482" y="406" class="s">JSON-RPC 2.0</text>
-  <text x="482" y="498" class="s">stdio or HTTP</text>
-  <text x="482" y="582" class="s">one client per server, 1:1</text>
-
-  <!-- external -->
-  <rect x="720" y="160" width="420" height="160" rx="18" fill="#292929" stroke="#928374" stroke-width="2" stroke-dasharray="8 6"/>
-  <text x="744" y="200" class="h2" style="fill:#928374">The outside world</text>
-  <text x="744" y="236" class="b">GitHub API, databases,</text>
-  <text x="744" y="262" class="b">files, Slack, browsers…</text>
-  <text x="744" y="296" class="s">servers wrap these</text>
-  <line x1="930" y1="380" x2="930" y2="324" stroke="#a89984" stroke-width="3" marker-end="url(#a)"/>
-
-  <!-- what servers expose -->
-  <text x="40" y="660" class="h2">What a server exposes</text>
-  <rect x="40"  y="680" width="350" height="110" rx="12" fill="#404040"/>
-  <rect x="415" y="680" width="350" height="110" rx="12" fill="#404040"/>
-  <rect x="790" y="680" width="350" height="110" rx="12" fill="#404040"/>
-  <text x="62" y="718" class="h2" style="fill:#ea6962">Tools</text>
-  <text x="62" y="750" class="b">actions the model calls</text>
-  <text x="62" y="774" class="s">create_issue(), run_query()</text>
-  <text x="437" y="718" class="h2" style="fill:#89b482">Resources</text>
-  <text x="437" y="750" class="b">data the app can read</text>
-  <text x="437" y="774" class="s">file://, db rows, docs</text>
-  <text x="812" y="718" class="h2" style="fill:#d3869b">Prompts</text>
-  <text x="812" y="750" class="b">reusable templates</text>
-  <text x="812" y="774" class="s">/review-pr, /summarise</text>
-
-  <!-- flow -->
-  <text x="40" y="860" class="h2">One tool call, step by step</text>
-  <g>
-    <circle cx="60" cy="904" r="18" fill="#a9b665"/><text x="60" y="910" class="k" text-anchor="middle">1</text>
-    <text x="94" y="910" class="b">initialize: client and server agree on version + capabilities</text>
-    <circle cx="60" cy="958" r="18" fill="#a9b665"/><text x="60" y="964" class="k" text-anchor="middle">2</text>
-    <text x="94" y="964" class="b">tools/list: server describes its tools (name + JSON schema)</text>
-    <circle cx="60" cy="1012" r="18" fill="#a9b665"/><text x="60" y="1018" class="k" text-anchor="middle">3</text>
-    <text x="94" y="1018" class="b">LLM picks a tool; host asks you to approve if needed</text>
-    <circle cx="60" cy="1066" r="18" fill="#a9b665"/><text x="60" y="1072" class="k" text-anchor="middle">4</text>
-    <text x="94" y="1072" class="b">tools/call {name, arguments} → server does the real work</text>
-    <circle cx="60" cy="1120" r="18" fill="#a9b665"/><text x="60" y="1126" class="k" text-anchor="middle">5</text>
-    <text x="94" y="1126" class="b">result comes back → added to the LLM's context → answer</text>
+  <path d="M70 396 V428" class="ink" marker-end="url(#a)"/>
+  <path d="M70 404 Q70 412 78 412 H292 Q300 412 300 420 V428" class="ink" marker-end="url(#a)"/>
+  <g class="ink">
+    <ellipse cx="70" cy="438" rx="11" ry="4"/><path d="M59 438 V460 A11 4 0 0 0 81 460 V438"/>
+    <ellipse cx="300" cy="438" rx="11" ry="4"/><path d="M289 438 V460 A11 4 0 0 0 311 460 V438"/>
   </g>
-  <text x="40" y="1200" class="s">Write a server once, and every MCP host (Claude, IDEs, agents) can use it.</text>
+  <text x="92"  y="452" class="c" style="font-size:15px">link_embeddings</text>
+  <text x="92"  y="474" class="n">text and image</text>
+  <text x="322" y="452" class="c" style="font-size:15px">link_passage_embeddings</text>
+  <text x="322" y="474" class="n">one per passage</text>
+
+  <text x="592" y="308" class="m">Runs on every save or edit,</text>
+  <text x="592" y="330" class="m">off the request path.</text>
+  <text x="592" y="352" class="m">Bursts coalesce.</text>
+  <text x="592" y="384" class="m">Gemini embedding-2.</text>
+  <text x="592" y="452" class="m">Passages are halfvec,</text>
+  <text x="592" y="474" class="m">one row each.</text>
+
+  <!-- II. RETRIEVE -->
+  <text x="48" y="542" class="sec">II · RETRIEVE</text>
+  <text x="294" y="592" class="c" text-anchor="middle" style="font-size:18px;fill:#d6d0c2">GET /search?q=</text>
+  <path d="M376 586 H578" class="lead"/>
+  <text x="592" y="592" class="m">Both arms run at once:</text>
+  <text x="592" y="614" class="c" style="font-size:15px;fill:#a8a295">tokio::join!</text>
+
+  <path d="M294 602 V608 Q294 616 286 616 H78 Q70 616 70 624 V638" class="ink" marker-end="url(#a)"/>
+  <path d="M294 608 Q294 616 302 616 H314 Q322 616 322 624 V638" class="ink" marker-end="url(#a)"/>
+
+  <text x="48" y="672" class="h">Lexical</text>
+  <text x="48" y="706" class="c">to_tsquery + ts_rank</text>
+  <text x="48" y="728" class="n">titles, tags and bodies</text>
+  <text x="48" y="762" class="c">url ILIKE '%q%'</text>
+  <text x="48" y="784" class="n">served by the trigram index</text>
+  <text x="48" y="818" class="n" style="fill:#bfb9ab">Always runs.</text>
+
+  <text x="300" y="672" class="h">Semantic</text>
+  <text x="300" y="706" class="c">embed(q) → cosine</text>
+  <text x="300" y="728" class="n">exact scan, no ANN index</text>
+  <text x="300" y="762" class="c">sim ≥ floor, in gap</text>
+  <text x="300" y="784" class="n">of the nearest match</text>
+  <text x="300" y="818" class="n" style="fill:#bfb9ab">3 scans, ≤ 50 each.</text>
+
+  <path d="M498 757 H578" class="lead"/>
+  <text x="592" y="762" class="m">The gap drops “hub” saves</text>
+  <text x="592" y="784" class="m">that sit near every query.</text>
+
+  <path d="M70 834 V852 Q70 860 78 860 H286 Q294 860 294 868 V890" class="ink" marker-end="url(#a)"/>
+  <path d="M322 834 V852 Q322 860 314 860 H302 Q294 860 294 868" class="ink"/>
+
+  <!-- the one accent: the failure path -->
+  <circle cx="322" cy="844" r="3" fill="#c8776f"/>
+  <path d="M330 844 H578" fill="none" stroke="#c8776f" stroke-width="1" stroke-dasharray="1 4" stroke-linecap="round"/>
+  <text x="592" y="849" class="m" style="fill:#c8776f">If it fails, times out or</text>
+  <text x="592" y="871" class="m" style="fill:#c8776f">finds nothing, lexical goes</text>
+  <text x="592" y="893" class="m" style="fill:#c8776f">out alone, with no error.</text>
+
+  <text x="294" y="920" class="sec" text-anchor="middle">→ 02 · FUSE</text>
 </svg>

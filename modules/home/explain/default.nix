@@ -27,7 +27,7 @@ lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     ".local/bin/rex".source = config.lib.file.mkOutOfStoreSymlink rexCli;
   };
 
-  # yazi: gruvbox theme everywhere, images and explainers open in the
+  # yazi: gruvbox theme (matching Rex), images and explainers open in the
   # terminal, previews for markdown and coloured traces.
   xdg.configFile."yazi".source = link "yazi";
 }

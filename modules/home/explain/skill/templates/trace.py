@@ -1,82 +1,151 @@
-"""05-text.ans: an annotated trace of one real MCP tool call.
+"""03-trace.ans: one search, then one Ask, with the real knobs.
 
-Text earns its place by being literal and dense: the actual messages on the
-wire, in order, with what each step costs or decides. Width is checked so it
-fits an 84-column pane.
+Layout, the diagram's rules in a terminal: the figure on the left, notes in
+a margin column on the right, one ink, red only for a cost or a gotcha.
+Everything fits WIDTH columns, which the pane gives with room to spare.
 """
-import re, sys
+import re, sys, textwrap
 
-def c(h): return f"\x1b[38;2;{int(h[1:3],16)};{int(h[3:5],16)};{int(h[5:7],16)}m"
-R, B, D = "\x1b[0m", "\x1b[1m", "\x1b[2m"
-FG, GREY = c("#ebdbb2"), c("#928374")
-YOU, LLM, CLI, SRV, EXT = c("#d3869b"), c("#7daea3"), c("#a9b665"), c("#d8a657"), c("#e78a4e")
-CODE, WARN = c("#89b482"), c("#ea6962")
-WIDTH = 84
+# ── layout kit (copy as is) ────────────────────────────────────────────────
+WIDTH, BODY, NOTE = 76, 5, 40          # total, figure indent, margin column
 
-you = f"{YOU}{B}you{R}"
-llm = f"{LLM}{B}LLM{R}"
-cli = f"{CLI}{B}client{R}"
-srv = f"{SRV}{B}server{R}"
-ext = f"{EXT}{B}GitHub{R}"
-def arrow(label=""): return f"{GREY}──{R}{FG}{label}{R}{GREY}──▶{R}" if label else f"{GREY}──▶{R}"
-def back(label=""): return f"{GREY}◀──{R}{FG}{label}{R}{GREY}──{R}"
-def code(s): return f"{CODE}{s}{R}"
-def why(s): return f"{GREY}{s}{R}"
-def step(n, title): return f" {CLI}{B}{n}{R}  {B}{FG}{title}{R}"  # circled digits draw 2 cells wide
+def rgb(h): return f"\x1b[38;2;{int(h[1:3],16)};{int(h[3:5],16)};{int(h[5:7],16)}m"
+R, B = "\x1b[0m", "\x1b[1m"
+INK, SOFT, NOTE_C, DIM, RED = rgb("#d6d0c2"), rgb("#bfb9ab"), rgb("#a8a295"), rgb("#78746a"), rgb("#c8776f")
+VIS = lambda s: re.sub(r"\x1b\[[0-9;]*m", "", s)
+
+def ink(s, base):
+    """`code` and literal values in bright ink; the rest in `base`."""
+    return base + re.sub(r"`([^`]+)`", lambda m: f"{INK}{m[1]}{base}", s) + R
+
+def plain(s): return s.replace("`", "")
 
 L = []
-L.append(f" {B}{FG}One MCP tool call, as it happens{R}")
-L.append(f" {GREY}you type:{R} {YOU}\"open an issue in dotfiles: rex theme should live in nix\"{R}")
-L.append("")
-L.append(f" {GREY}cast:{R} {you} {GREY}·{R} {llm} {GREY}+{R} {cli} {GREY}(in Claude Code) ·{R} {srv} {GREY}(github-mcp process) ·{R} {ext}")
-L.append(f" {GREY}{'─' * (WIDTH - 2)}{R}")
+def blank(): L.append("")
+def rule(): L.append(f" {DIM}{'─' * (WIDTH - 2)}{R}")
 
-L.append(step("①", "startup") + f"  {GREY}once per session, before you type anything{R}")
-VIS = lambda s: re.sub(r"\x1b\[[0-9;]*m", "", s)
-def note(left, text, col=42, colour=GREY):
-    return left + " " * max(1, col - len(VIS(left))) + f"{colour}{text}{R}"
-L.append(note(f"     {cli} {arrow(' initialize ')} {srv}", "agree on protocol version"))
-L.append(note(f"     {cli} {back(' capabilities ')} {srv}", "server says: I have tools"))
-L.append(note(f"     {cli} {arrow(' tools/list ')} {srv}", ""))
-L.append(note(f"     {cli} {back(' 26 tools ')} {srv}", "every schema rides along in every", colour=WARN))
-L.append(note("", "LLM request: ~4k tokens of context", colour=WARN))
-L.append("")
+def title(t, *lines):
+    L.append(f" {B}{INK}{t}{R}")
+    for l in lines: L.append(" " + ink(l, NOTE_C))
 
-L.append(step("②", "the model chooses") + f"  {GREY}no MCP traffic yet{R}")
-L.append(f"     {llm} reads your message + the 26 tool descriptions, emits:")
-L.append(f"       {code('tool_use  create_issue {repo: \"dotfiles\", title: \"rex theme in nix\"}')}")
-L.append(f"     {why('a vague tool description here = the wrong tool picked')}")
-L.append("")
+def step(n, t, ref=""):
+    left = f" {NOTE_C}{n}{R}  {B}{INK}{t}{R}"
+    pad = WIDTH - len(VIS(left)) - len(ref)
+    L.append(left + (" " * max(2, pad) + f"{NOTE_C}{ref}{R}" if ref else ""))
 
-L.append(step("③", "the host gatekeeps"))
-L.append(f"     Claude Code {arrow()} {you}   {YOU}allow github · create_issue?{R}  {why('[y] once / always / no')}")
-L.append(f"     {why('servers cannot act on their own; every call goes through this')}")
-L.append("")
+def row(left="", note="", red=False, indent=BODY):
+    """A figure line with its note in the margin column. A note wraps inside
+    the margin; a figure line too long for its side pushes the note below."""
+    lines = textwrap.wrap(plain(note), WIDTH - NOTE) if note else []
+    # re-apply `code` marks after wrapping on the plain text
+    marks = re.findall(r"`([^`]+)`", note)
+    def mark(s):
+        for m in marks: s = s.replace(m, f"`{m}`", 1)
+        return s
+    colour = RED if red else NOTE_C
+    head = " " * indent + ink(left, SOFT) if left else ""
+    if lines and len(VIS(head)) > NOTE - 2:
+        L.append(head); head = ""
+    for i, n in enumerate(lines or [""]):
+        h = head if i == 0 else ""
+        L.append(h + " " * (NOTE - len(VIS(h))) + ink(mark(n), colour) if n else h)
 
-L.append(step("④", "the call") + f"  {GREY}JSON-RPC 2.0 over stdio (pipes) or HTTP{R}")
-L.append(f"     {cli} {arrow(' tools/call ')} {srv} {arrow(' POST /repos/…/issues ')} {ext}")
-L.append(f"       {code('{\"method\":\"tools/call\",\"id\":7,\"params\":{\"name\":\"create_issue\",…}}')}")
-L.append(f"     {why('the server holds the GitHub token; the LLM never sees it')}")
-L.append("")
+def sub(label):
+    L.append(" " * BODY + f"{INK}{label}{R}")
 
-L.append(step("⑤", "the result comes back"))
-L.append(f"     {cli} {back(' result ')} {srv} {back(' 201 Created ')} {ext}")
-L.append(f"       {code('{\"id\":7,\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"Created #42\"}]}}')}")
-L.append(f"     {why('this text is appended to the conversation, then the LLM continues')}")
-L.append("")
+def code(*lines, indent=BODY):
+    for l in lines: L.append(" " * indent + f"{DIM}│{R} {INK}{l}{R}")
 
-L.append(step("⑥", "the answer"))
-L.append(f"     {llm} {arrow()} {you}   {YOU}\"Opened dotfiles#42.\"{R}")
-L.append(f" {GREY}{'─' * (WIDTH - 2)}{R}")
+def table(head, rows, widths, indent=BODY, right=()):
+    """Columns left-aligned, except those in `right` (numbers)."""
+    fmt = lambda cells, c: "".join(
+        f"{c}{x:>{w}}{R}" if i in right else f"{c}{x:<{w}}{R}" for i, (x, w) in enumerate(zip(cells, widths)))
+    L.append(" " * indent + fmt(head, NOTE_C))
+    for r in rows: L.append(" " * indent + fmt(r, INK))
 
-L.append(f" {B}{FG}worth remembering{R}")
-L.append(f"  {SRV}•{R} the {llm} never talks to servers; the {cli} does, and only after {you} allow it")
-L.append(f"  {SRV}•{R} tool lists cost context on every turn: fewer, sharper servers beat many")
-L.append(f"  {SRV}•{R} secrets live in the server process, not in the prompt")
+def bullets(*items):
+    for it in items:
+        w = textwrap.wrap(it, WIDTH - 4)
+        L.append(f"  {NOTE_C}·{R} {SOFT}{w[0]}{R}")
+        for x in w[1:]: L.append(f"    {SOFT}{x}{R}")
 
-# keep it inside the pane
-vis = lambda s: re.sub(r"\x1b\[[0-9;]*m", "", s)
-too_wide = [(i, len(vis(l))) for i, l in enumerate(L) if len(vis(l)) > WIDTH]
+# ── the trace ──────────────────────────────────────────────────────────────
+title("One search, then one Ask, as they happen",
+      'the query  `"paul graham on doing great work"`',
+      "routes/search/mod.rs · retrieve(), retrieve_for_ask()")
+rule(); blank()
+
+step("1", "Indexed at save time", "embeddings/")
+row("`link` → trigger → job queue", "every save or edit")
+row("  → worker → `gemini-embedding-2`")
+blank()
+row("`links.search_tsv`", "local, always")
+row("`link_contents.tsv`", "local, always")
+row("`link_embeddings`", "hosted; text and image")
+row("`link_passage_embeddings`", "hosted; halfvec, one per page")
+row("eligibility", "gates only what Gemini may read")
+blank()
+
+step("2", "Two arms at once", "tokio::join!")
+sub("lexical")
+code("to_tsquery('english',", "  'paul & graham & great & work')")
+row("`ts_rank` + `url ILIKE` via pg_trgm", "never skipped")
+sub("semantic")
+row("embed the query", "per-user cache first")
+row("deadline `1 s` as you type", "embedding takes 0.1–0.5 s")
+row("skip if q is under `3` chars", "a prefix means nothing")
+blank()
+
+step("3", "Exact scans, kept only as evidence")
+code("WITH qv AS MATERIALIZED", "  (SELECT $3::vector AS v)", "… embedding <=> qv.v AS distance", "… LIMIT 50")
+row("without the CTE", "340 ms over 8,854 passages, not 2", red=True)
+blank()
+table(("target", "floor", "gap", "weight"),
+      [("text", "0.70", "0.08", "1.00"), ("image", "0.58", "0.10", "0.75"), ("passage", "0.64", "0.10", "1.25")],
+      (10, 6, 7, 9), right=(1, 2, 3))
+blank()
+row("floor", "least similarity that counts")
+row("gap", "drops “hubs” far behind the nearest")
+row("passages", "8 kept per link")
+row("`embedding_targets`", "holds these; retune with an UPDATE")
+blank()
+
+step("4", "Fuse ranks, k = 60", "fusion.rs")
+table(("save", "ranked", "score"),
+      [("B", "text 1, passage 1", "1/61 + 1.25/61 = .0369"),
+       ("A", "lexical 1, text 3", "1/61 + 1/63 = .0323"),
+       ("C", "lexical 2", "1/62 = .0161")],
+      (6, 20, 22), right=(2,))
+blank()
+row("B wins with no keyword", "meaning beat words")
+row("top 3 lexical pinned", "a cut never drops an exact match")
+row("semantic fails or finds 0", "lexical alone, never a 500", red=True)
+blank()
+
+step("5", "Ask: the same retriever, then a model", "ask/")
+row("keywords: AND first", "then each alone, if AND finds < 3")
+row("semantic: the whole question", "2 s deadline")
+row("", 'so "paul graham" → paulgraham.com')
+row("sources per save, budgeted", "summary, opening, nearest passages")
+row("the model", "answers with [n] citations")
+row("shown: cited, plus related", "confident and sharing a word")
+row("related: similarity ≥ `0.76`", "stricter than the 0.70 floor")
+row("a keyword-only match", "is read, never shown as related", red=True)
+blank()
+
+step("6", "Opening a file from a hit", "settle.rs")
+row("a passage holds every word", "keep its page, no call")
+row("otherwise `POST /links/{id}/match`", "the model replies one integer")
+row("why not always ask", "it broke 52 good pages, fixed 21")
+blank()
+
+rule()
+L.append(f" {B}{INK}Worth remembering{R}")
+bullets("RAG from first principles: no vector DB, no framework, just Postgres.",
+        "Exact scans work because each library is small: no ANN recall loss.",
+        "Fusion uses ranks, so ts_rank and cosine never need a common scale.")
+
+too_wide = [(i, len(VIS(l))) for i, l in enumerate(L) if len(VIS(l)) > WIDTH]
 assert not too_wide, too_wide
 open(sys.argv[1], "w").write("\n".join(L) + "\n")
-print(f"{len(L)} lines, max width {max(len(vis(l)) for l in L)}")
+print(f"{len(L)} lines, max width {max(len(VIS(l)) for l in L)}")
