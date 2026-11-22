@@ -5,6 +5,26 @@ let
   theme = import ../../theme { inherit lib; };
   p = theme.palette;
   inherit (theme) cursor;
+
+  # niri has no output mirroring, so the PiKVM's output gets a fullscreen
+  # wl-mirror of the Samsung instead. Connector names get renumbered, so
+  # look both up by model in niri's own output list.
+  pikvm-mirror = pkgs.writeShellApplication {
+    name = "pikvm-mirror";
+    runtimeInputs = [ pkgs.jq pkgs.wl-mirror ];
+    text = ''
+      connector() {
+        niri msg --json outputs \
+          | jq -r --arg model "$1" 'to_entries[] | select(.value.model == $model) | .key' \
+          | head -n1
+      }
+      src=$(connector LC27RG50)
+      dst=$(connector "PiKVM V3")
+      # Nothing to do unless both are plugged in
+      if [ -z "$src" ] || [ -z "$dst" ]; then exit 0; fi
+      exec wl-mirror --fullscreen-output "$dst" "$src"
+    '';
+  };
 in {
   # Niri config file
   xdg.configFile."niri/config.kdl".text = ''
@@ -17,6 +37,8 @@ in {
     spawn-at-startup "sway-audio-idle-inhibit"
     // Polkit agent for niri; Plasma brings its own, so it is not a service
     spawn-at-startup "soteria"
+    // Mirror the Samsung onto the PiKVM (see pikvm-mirror above)
+    spawn-at-startup "${lib.getExe pikvm-mirror}"
 
     environment {
         // Qt apps (Anki, OBS, Dolphin) take their palette from the GTK theme.
@@ -40,6 +62,13 @@ in {
         mode "1920x1080@239.760"
         position x=0 y=0
     }
+    // PiKVM capture (HDMI, 720p EDID). Shows a wl-mirror of the Samsung
+    // rather than its own desktop. Placed well clear of the other outputs
+    // so the cursor can't wander onto it; the gap means no shared edge.
+    output "The Linux Foundation PiKVM V3 CAFEBABE" {
+        mode "1280x720"
+        position x=4000 y=0
+    }
 
     // wpaperd's surfaces sit in the overview backdrop rather than inside
     // each workspace, so the wallpaper stays put behind zoomed-out
@@ -56,6 +85,12 @@ in {
         match app-id=r#"(?i)soteria"#
         match app-id=r#"^xdg-desktop-portal-gtk$"#
         open-floating true
+    }
+
+    // The PiKVM mirror: never steal focus from what you're working on
+    window-rule {
+        match app-id=r#"^at\.yrlf\.wl_mirror$"#
+        open-focused false
     }
 
     // Rounded windows. clip-to-geometry also clips the window contents, so

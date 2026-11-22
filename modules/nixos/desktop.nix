@@ -109,6 +109,80 @@ in
     CursorTheme = theme.cursor.name;
     CursorSize = theme.cursor.size;
   };
+  # Login screen monitor layout. SDDM's greeter runs its own kwin_wayland,
+  # which never sees niri's output blocks; with no saved config it stacks
+  # every output at (0,0), so the PiKVM (HDMI) showed the top-left corner
+  # of the LG. Mirror the niri layout here instead, with the PiKVM
+  # replicating the Samsung (the primary, where Breeze draws the login
+  # form). KWin matches outputs by EDID identifier/hash, and picks the
+  # setup whose outputs are exactly the ones connected, so the second
+  # setup covers the PiKVM being unplugged.
+  systemd.tmpfiles.rules =
+    let
+      lg = "c40dd54c-2f39-4a1f-9627-64abe7eadfbf";
+      samsung = "5b0b3c1e-6f1a-4c55-9a43-1d2f2e7f0b61";
+      pikvm = "9e3a7d42-2c8b-4f0e-8b16-0a6c5d4e3f27";
+      kwinOutputs = pkgs.writeText "kwinoutputconfig.json" (builtins.toJSON [
+        {
+          name = "outputs";
+          data = [
+            {
+              uuid = lg;
+              connectorName = "DP-5";
+              edidIdentifier = "GSM 23490 138441 9 2021 0";
+              edidHash = "b8625d3c47080053548de77a86b02744";
+              mode = { width = 3840; height = 2160; refreshRate = 59997; };
+              scale = 1.25;
+              transform = "Rotated90";
+            }
+            {
+              uuid = samsung;
+              connectorName = "DP-6";
+              edidIdentifier = "SAM 4106 1129787987 41 2020 0";
+              edidHash = "f0ef7e7b296a1be8414dd02f60b5399d";
+              mode = { width = 1920; height = 1080; refreshRate = 239760; };
+              scale = 1;
+              transform = "Normal";
+            }
+            {
+              uuid = pikvm;
+              connectorName = "HDMI-A-2";
+              edidIdentifier = "LNX 30577 16843009 35 2016 0";
+              edidHash = "44c5abb080a265a5b5c74af05d8a3a21";
+              scale = 1;
+              transform = "Normal";
+            }
+          ];
+        }
+        {
+          name = "setups";
+          data =
+            let
+              # Same arrangement as niri.nix: LG portrait (1728x3072 logical
+              # at 1.25) on the left, Samsung centred on it to the right.
+              lgOut = { outputIndex = 0; enabled = true; position = { x = 0; y = 0; }; priority = 1; replicationSource = ""; };
+              samsungOut = { outputIndex = 1; enabled = true; position = { x = 1728; y = 996; }; priority = 0; replicationSource = ""; };
+            in [
+              {
+                lidClosed = false;
+                outputs = [
+                  lgOut
+                  samsungOut
+                  { outputIndex = 2; enabled = true; position = { x = 1728; y = 996; }; priority = 2; replicationSource = samsung; }
+                ];
+              }
+              { lidClosed = false; outputs = [ lgOut samsungOut ]; }
+            ];
+        }
+      ]);
+    in [
+      "d /var/lib/sddm/.config 0755 sddm sddm -"
+      # A real file rather than a store symlink (KWin saves with an atomic
+      # rename, which would replace a symlink). C+ re-copies it on every
+      # boot and switch, so anything KWin writes back never sticks.
+      "C+ /var/lib/sddm/.config/kwinoutputconfig.json - - - - ${kwinOutputs}"
+    ];
+
   environment.systemPackages = [
     pkgs.discord
     (theme.cursor.package pkgs)
