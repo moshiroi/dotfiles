@@ -17,7 +17,16 @@
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
-    settings.trusted-users = [ username ];
+    settings = {
+      trusted-users = [ username ];
+      # numtide's cache for llm-agents.nix (codex, opencode). Its flake
+      # declares this in nixConfig, but that doesn't carry over to flakes
+      # that consume it, so without this they compile from source.
+      extra-substituters = [ "https://cache.numtide.com" ];
+      extra-trusted-public-keys = [
+        "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      ];
+    };
   };
 
   # eMudhra's emSign intermediate CA keys were recoverable (2026-10-17,
