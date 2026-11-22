@@ -6,6 +6,9 @@ let
   p = theme.palette;
   inherit (theme) cursor;
 
+  # niri's name for the PiKVM's HDMI output, trailing spaces and all
+  pikvmOutput = "The Linux Foundation PiKVM V3 CAFEBABE     ";
+
   # niri has no output mirroring, so the PiKVM's output gets a fullscreen
   # wl-mirror of the Samsung instead. Connector names get renumbered, so
   # look both up by model in niri's own output list.
@@ -65,7 +68,9 @@ in {
     // PiKVM capture (HDMI, 720p EDID). Shows a wl-mirror of the Samsung
     // rather than its own desktop. Placed well clear of the other outputs
     // so the cursor can't wander onto it; the gap means no shared edge.
-    output "The Linux Foundation PiKVM V3 CAFEBABE" {
+    // The trailing spaces are real: the EDID pads its serial with them,
+    // and niri matches the name exactly.
+    output "${pikvmOutput}" {
         mode "1280x720"
         position x=4000 y=0
     }
@@ -87,9 +92,13 @@ in {
         open-floating true
     }
 
-    // The PiKVM mirror: never steal focus from what you're working on
+    // The PiKVM mirror: fullscreen on the PiKVM, never stealing focus.
+    // wl-mirror's own --fullscreen-output isn't enough: at startup niri
+    // opens it on the focused monitor instead.
     window-rule {
         match app-id=r#"^at\.yrlf\.wl_mirror$"#
+        open-on-output "${pikvmOutput}"
+        open-fullscreen true
         open-focused false
     }
 
