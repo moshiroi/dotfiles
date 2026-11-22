@@ -149,6 +149,7 @@ in
               connectorName = "HDMI-A-2";
               edidIdentifier = "LNX 30577 16843009 35 2016 0";
               edidHash = "44c5abb080a265a5b5c74af05d8a3a21";
+              mode = { width = 1280; height = 720; refreshRate = 60000; };
               scale = 1;
               transform = "Normal";
             }
@@ -177,10 +178,11 @@ in
       ]);
     in [
       "d /var/lib/sddm/.config 0755 sddm sddm -"
-      # A real file rather than a store symlink (KWin saves with an atomic
-      # rename, which would replace a symlink). C+ re-copies it on every
-      # boot and switch, so anything KWin writes back never sticks.
-      "C+ /var/lib/sddm/.config/kwinoutputconfig.json - - - - ${kwinOutputs}"
+      # L+ replaces whatever is there (KWin writes its generated layout
+      # back to this path, and C/C+ won't overwrite an existing file), and
+      # the store is read-only, so KWin can't persist its own layout over
+      # this one.
+      "L+ /var/lib/sddm/.config/kwinoutputconfig.json - - - - ${kwinOutputs}"
     ];
 
   environment.systemPackages = [
