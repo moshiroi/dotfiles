@@ -158,11 +158,7 @@ in
     enableZshIntegration = false;
     enableNushellIntegration = false;
     enableFishIntegration = true;
-    settings = import ./starship.nix {
-      inherit p;
-      # Filled Gruvbox blocks on the Mac; the Lichen pill elsewhere
-      vivid = isDarwin;
-    };
+    settings = import ./starship.nix p;
   };
 
   programs.zellij = {

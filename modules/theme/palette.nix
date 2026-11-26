@@ -33,7 +33,7 @@ rec {
   success = accent;
 
   # Terminal-style colours for the desktop pieces that sit beside Lichen (the
-  # bar, zellij, the Linux prompt, Ghostty's Linux surfaces): Gruvbox Material
+  # bar, zellij, Ghostty's Linux surfaces): Gruvbox Material
   # hues, which are Gruvbox's colours desaturated, on Lichen's surfaces.
   term = {
     black = card;
@@ -54,7 +54,7 @@ rec {
   # Gruvbox Dark (hard): the original, saturated Gruvbox, for the terminal
   # emulators themselves (Ghostty here; Rex's "Gruvbox Dark" theme in
   # modules/home/rex is the same colours). Normal colours are the deep set,
-  # bright colours the vivid set. The Mac prompt's blocks use these too.
+  # bright colours the vivid set. The prompt's blocks use these too.
   gruvbox = {
     black = "#3c3836"; # bg1 rather than the background, so it stays visible
     red = "#cc241d";
