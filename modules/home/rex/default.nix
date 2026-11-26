@@ -12,8 +12,10 @@ let
   domain = "com.superlogical.rex";
   font = config.dotfiles.terminalFont;
 
-  # Exported from Rex after importing "Gruvbox Material" (the Ghostty-format
-  # source beside this file). Rex stores custom themes as one JSON blob.
+  # Exported from Rex after importing the Ghostty-format sources beside this
+  # file. Rex stores custom themes as one JSON blob; the first one is selected.
+  # "Gruvbox Dark" is the original, saturated Gruvbox; "Gruvbox Material" is
+  # the muted variant, kept as an alternative.
   themes = ./custom-themes.json;
   themeID = (builtins.head (builtins.fromJSON (builtins.readFile themes))).id;
 in
@@ -28,6 +30,7 @@ lib.mkMerge [
   }
   (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     # Kept for re-importing by hand: Settings > Themes > Import Theme.
+    xdg.configFile."rex/themes/Gruvbox Dark".source = ./. + "/Gruvbox Dark";
     xdg.configFile."rex/themes/Gruvbox Material".source = ./. + "/Gruvbox Material";
 
     targets.darwin.defaults.${domain} = {
@@ -38,6 +41,10 @@ lib.mkMerge [
       # "Improve text contrast" recolours low-contrast text, which turned the
       # cream-on-orange starship prompt black. Draw program colours as-is.
       "Workspace.terminalImproveTextContrast" = false;
+      # Read colours as Display P3 rather than sRGB: the same hex values land
+      # further out in the Mac display's wider gamut, so every colour (theme
+      # and program RGB alike) is more saturated.
+      "Workspace.terminalUsesDisplayP3" = true;
     };
 
     # The theme blob is plist data, which targets.darwin.defaults can't

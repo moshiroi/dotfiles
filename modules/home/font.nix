@@ -3,7 +3,7 @@
 # it is named in one place; desktop UI uses the theme's UI font instead. The
 # font itself is installed system-wide in modules/common/system.nix
 # (fonts.packages).
-{ lib, ... }:
+{ lib, pkgs, ... }:
 let
   theme = import ../theme { inherit lib; };
 in
@@ -19,7 +19,9 @@ in
     };
     size = lib.mkOption {
       type = lib.types.int;
-      default = 10;
+      # Larger on the Mac: its panel is denser and sits further away than
+      # the Linux desktop's, where 10 already reads well.
+      default = if pkgs.stdenv.hostPlatform.isDarwin then 12 else 10;
       description = "Point size in terminals.";
     };
   };
