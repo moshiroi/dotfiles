@@ -22,6 +22,15 @@
     ];
   };
 
+  # Touch ID for sudo, with the password still accepted as a fallback.
+  # `reattach` lets the prompt reach the fingerprint sensor from terminals
+  # that run under a multiplexer (Rex, zellij, tmux), where it otherwise
+  # falls back to the password.
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;
+  };
+
   system.stateVersion = 4;
   system.primaryUser = username;
 }
