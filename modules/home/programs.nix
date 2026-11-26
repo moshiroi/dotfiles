@@ -65,7 +65,7 @@ in
     };
   };
 
-  programs.helix = import ./helix { inherit pkgs; };
+  programs.helix = import ./helix { inherit pkgs lib; };
 
   programs.alacritty = {
     enable = true;

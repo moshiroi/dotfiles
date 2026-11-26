@@ -1,10 +1,32 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
+let
+  custom-cat = import ./catppuccin.nix;
+
+  # custom-cat with every hue at the same lightness but about 30% more
+  # saturation (same OKLCH lightness and hue, chroma x1.3). The original's
+  # calm comes from its colours all being equally bright, so this keeps that
+  # and only makes them richer. This is the default theme; `:theme custom-cat`
+  # switches back to the original.
+  richer = {
+    "#ea6962" = "#ff514f"; # red
+    "#e78a4e" = "#f87e1d"; # orange
+    "#d8a657" = "#e3a228"; # yellow
+    "#a9b665" = "#a8b847"; # green
+    "#89b482" = "#7fb876"; # aqua
+    "#7daea3" = "#6fb1a3"; # blue
+    "#d3869b" = "#e07c9a"; # pink
+  };
+  # Swaps colours wherever they are a plain value; a list of colours (a
+  # `rainbow` key, say) would need handling here too.
+  recolour = lib.mapAttrsRecursive (_: v: if builtins.isString v then richer.${v} or v else v);
+in
 {
   package = pkgs.helix;
   enable = true;
   defaultEditor = true;
   themes.alexis = import ./gruvbox.nix;
-  themes.custom-cat = import ./catppuccin.nix;
+  themes.custom-cat = custom-cat;
+  themes.custom-cat-plus = recolour custom-cat;
   languages = {
     language-server = {
       nixd = {
@@ -106,7 +128,7 @@
     ];
   };
   settings = {
-    theme = "custom-cat";
+    theme = "custom-cat-plus";
     keys.normal = {
       ret= "goto_word";
     };
