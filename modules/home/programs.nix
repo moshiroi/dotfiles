@@ -151,7 +151,11 @@ in
     enableZshIntegration = false;
     enableNushellIntegration = false;
     enableFishIntegration = true;
-    settings = import ./starship.nix p;
+    settings = import ./starship.nix {
+      inherit p;
+      # Filled blocks in helix's colours on the Mac; the Lichen pill elsewhere
+      vivid = pkgs.stdenv.hostPlatform.isDarwin;
+    };
   };
 
   programs.zellij = {
