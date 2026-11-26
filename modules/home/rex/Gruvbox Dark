@@ -1,6 +1,6 @@
 # Gruvbox Dark (hard) — Rex terminal theme (Ghostty palette format).
-# The original Gruvbox colours at full saturation, which is what Ghostty had
-# before the desktop moved to Lichen: normal colours are the deep set
+# The original Gruvbox colours at full saturation, the same as Ghostty's
+# (`gruvbox` in modules/theme/palette.nix): normal colours are the deep set
 # (red #cc241d), bright colours the vivid set (red #fb4934). Claude Code's
 # "dark-ansi" theme draws its logo and accents from these slots, so they
 # follow this file.

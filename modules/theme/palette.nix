@@ -1,4 +1,6 @@
-# Lichen: the desktop palette, and the only place colours are defined.
+# Lichen: the desktop palette, and the one place desktop and terminal-emulator
+# colours are defined. (Helix's themes, the yazi theme and Rex's theme files
+# carry their own.)
 #
 # Warm charcoal surfaces, bone text and a single sage accent, tuned for dim
 # rooms: no pure black or white, low saturation throughout, and text kept
@@ -30,9 +32,9 @@ rec {
   warning = "#bfa36f";
   success = accent;
 
-  # Terminal: Gruvbox Material hues (Gruvbox's colours in the same slots,
-  # desaturated) on Lichen's surfaces, so code still reads like Gruvbox but
-  # nothing glares.
+  # Terminal-style colours for the desktop pieces that sit beside Lichen (the
+  # bar, zellij, the Linux prompt, Ghostty's Linux surfaces): Gruvbox Material
+  # hues, which are Gruvbox's colours desaturated, on Lichen's surfaces.
   term = {
     black = card;
     red = "#ea6962";
@@ -47,5 +49,32 @@ rec {
     background = window;
     foreground = text;
     selection = hover;
+  };
+
+  # Gruvbox Dark (hard): the original, saturated Gruvbox, for the terminal
+  # emulators themselves (Ghostty here; Rex's "Gruvbox Dark" theme in
+  # modules/home/rex is the same colours). Normal colours are the deep set,
+  # bright colours the vivid set. The Mac prompt's blocks use these too.
+  gruvbox = {
+    black = "#3c3836"; # bg1 rather than the background, so it stays visible
+    red = "#cc241d";
+    green = "#98971a";
+    yellow = "#d79921";
+    blue = "#458588";
+    magenta = "#b16286";
+    cyan = "#689d6a";
+    white = "#a89984";
+    brightBlack = "#928374";
+    brightRed = "#fb4934";
+    brightGreen = "#b8bb26";
+    brightYellow = "#fabd2f";
+    brightBlue = "#83a598";
+    brightMagenta = "#d3869b";
+    brightCyan = "#8ec07c";
+    brightWhite = "#ebdbb2";
+    background = "#1d2021";
+    foreground = "#ebdbb2";
+    cursor = "#83a598";
+    selection = "#504945";
   };
 }

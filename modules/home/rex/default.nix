@@ -2,12 +2,7 @@
 # holds keybindings, so appearance lives in the app's preferences
 # (com.superlogical.rex) and is set from here. Rex reads them at launch:
 # quit and reopen Rex after a switch that changes them.
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, lib, pkgs, ... }:
 let
   domain = "com.superlogical.rex";
   font = config.dotfiles.terminalFont;
@@ -39,7 +34,7 @@ lib.mkMerge [
       "Workspace.terminalFontStyle" = font.style;
       "Workspace.terminalFontPointSize" = font.size;
       # "Improve text contrast" recolours low-contrast text, which turned the
-      # cream-on-orange starship prompt black. Draw program colours as-is.
+      # cream-on-red starship block black. Draw program colours as-is.
       "Workspace.terminalImproveTextContrast" = false;
       # Read colours as Display P3 rather than sRGB: the same hex values land
       # further out in the Mac display's wider gamut, so every colour (theme

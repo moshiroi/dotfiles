@@ -1,9 +1,13 @@
 { config, lib, pkgs, ... }:
 let
   font = config.dotfiles.terminalFont;
-  # Lichen, the desktop palette (modules/theme); the terminal uses its
-  # surfaces with Gruvbox Material hues
+  # Lichen, the desktop palette (modules/theme)
   p = (import ../theme { inherit lib; }).palette;
+  g = p.gruvbox; # the terminal emulators' own colours
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  # Ghostty's surfaces: Gruvbox's on the Mac, so it looks like Rex; Lichen's
+  # on Linux, so the window still sits with the rest of the desktop.
+  surfaces = if isDarwin then g else p.term // { cursor = p.text; };
 in
 {
   programs.git = {
@@ -34,7 +38,7 @@ in
       { name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish.src; }
     ];
     interactiveShellInit = ''
-      ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+      ${lib.optionalString isDarwin ''
         # Ensure Nix is loaded after OS upgrade
         if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
           source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
@@ -84,24 +88,24 @@ in
     enable = true;
     # nixpkgs only builds ghostty for Linux; on macOS install Ghostty.app
     # separately and let home-manager just manage the config.
-    package = if pkgs.stdenv.hostPlatform.isDarwin then null else pkgs.ghostty;
+    package = if isDarwin then null else pkgs.ghostty;
     enableFishIntegration = true;
     settings = {
-      # Lichen surfaces and text with Gruvbox Material hues: Gruvbox's
-      # colours in the same slots, desaturated, so code reads as before
-      # without glaring in a dim room. Normal and bright share hues, as in
-      # Gruvbox Material; bright black is lifted for comments.
-      background = p.term.background;
-      foreground = p.term.foreground;
-      cursor-color = p.text;
-      cursor-text = p.window;
-      selection-background = p.term.selection;
-      selection-foreground = p.text;
-      palette = let t = p.term; in [
-        "0=${t.black}" "1=${t.red}" "2=${t.green}" "3=${t.yellow}"
-        "4=${t.blue}" "5=${t.magenta}" "6=${t.cyan}" "7=${t.white}"
-        "8=${t.brightBlack}" "9=${t.red}" "10=${t.green}" "11=${t.yellow}"
-        "12=${t.blue}" "13=${t.magenta}" "14=${t.cyan}" "15=${t.brightWhite}"
+      # The original Gruvbox colours at full saturation, the same as Rex
+      # (modules/home/rex): normal colours are the deep set, bright colours
+      # the vivid set.
+      background = surfaces.background;
+      foreground = surfaces.foreground;
+      cursor-color = surfaces.cursor;
+      cursor-text = surfaces.background;
+      selection-background = surfaces.selection;
+      selection-foreground = surfaces.foreground;
+      palette = [
+        "0=${g.black}" "1=${g.red}" "2=${g.green}" "3=${g.yellow}"
+        "4=${g.blue}" "5=${g.magenta}" "6=${g.cyan}" "7=${g.white}"
+        "8=${g.brightBlack}" "9=${g.brightRed}" "10=${g.brightGreen}"
+        "11=${g.brightYellow}" "12=${g.brightBlue}" "13=${g.brightMagenta}"
+        "14=${g.brightCyan}" "15=${g.brightWhite}"
       ];
       font-family = font.family;
       font-style = font.style;
@@ -126,6 +130,9 @@ in
       unfocused-split-opacity = 0.85;
       confirm-close-surface = false;
       macos-option-as-alt = "left";
+      # Read colours as Display P3 rather than sRGB, as Rex does, so the same
+      # hex values are more saturated on the Mac's display. macOS only.
+      window-colorspace = "display-p3";
       # Ghostty maps alt+arrows to esc:b / esc:f (word jumps), which zellij
       # reads as Alt+f (ToggleFloatingPanes). Unbind so zellij gets real arrows.
       # Its default ctrl+enter=toggle_fullscreen also swallows the key before
@@ -135,7 +142,7 @@ in
         "alt+arrow_right=unbind"
         "ctrl+enter=unbind"
       ];
-    } // lib.optionalAttrs (pkgs.stdenv.hostPlatform.isDarwin
+    } // lib.optionalAttrs (isDarwin
       || lib.versionAtLeast pkgs.ghostty.version "1.2") {
       # Fall back to TERM=xterm-256color on hosts without ghostty's terminfo
       # (option added in ghostty 1.2; the macOS app is always current).
@@ -153,8 +160,8 @@ in
     enableFishIntegration = true;
     settings = import ./starship.nix {
       inherit p;
-      # Filled blocks in helix's colours on the Mac; the Lichen pill elsewhere
-      vivid = pkgs.stdenv.hostPlatform.isDarwin;
+      # Filled Gruvbox blocks on the Mac; the Lichen pill elsewhere
+      vivid = isDarwin;
     };
   };
 
